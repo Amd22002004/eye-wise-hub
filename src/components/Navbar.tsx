@@ -23,16 +23,14 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-20 items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-            <img
-              src="/logo.png"
-              alt="ОфтальмоВики"
-              className="h-8 w-8 object-contain"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.svg";
-              }}
-            />
-          </div>
+          <img
+            src="/logo.png"
+            alt="ОфтальмоВики"
+            className="h-12 w-12 object-contain"
+            onError={(e) => {
+              e.currentTarget.src = "/placeholder.svg";
+            }}
+          />
           <div className="flex flex-col">
             <span className="text-lg font-bold text-foreground leading-tight">ОфтальмоВики</span>
             <span className="text-sm text-muted-foreground leading-tight">Ассоциация офтальмологических клиник</span>

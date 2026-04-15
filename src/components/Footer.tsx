@@ -2,7 +2,8 @@ const Footer = () => (
   <footer className="border-t border-border bg-card py-10">
     <div className="container flex flex-col items-center gap-6 text-center">
       {/* Main branding */}
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex flex-col items-center gap-3">
+        <img src="/logo.png" alt="ОфтальмоВики" className="h-14 w-14 object-contain" />
         <span className="text-lg font-semibold text-foreground">Ассоциация офтальмологических клиник</span>
         <span className="text-base text-muted-foreground">ОфтальмоВики — справочник для пациентов и специалистов</span>
       </div>

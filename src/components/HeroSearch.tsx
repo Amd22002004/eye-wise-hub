@@ -23,6 +23,14 @@ const HeroSearch = () => {
 
   return (
     <section className="relative flex flex-col items-center px-5 py-20 sm:py-24 md:py-32">
+      <motion.img
+        src="/logo.png"
+        alt="ОфтальмоВики"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="mb-6 h-20 w-20 sm:h-24 sm:w-24 object-contain"
+      />
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
