@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Edit, Eye, FileText, Stethoscope, FolderTree } from "lucide-react";
-import { articles, categories, MEDICAL_SECTION_LABELS, MedicalSections, getRootCategories, getChildCategories } from "@/data/mockData";
+import { articles, categories, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type DualContent, getRootCategories, getChildCategories } from "@/data/mockData";
 
 type Tab = "articles" | "new" | "categories";
 
-const EMPTY_MEDICAL: MedicalSections = {
-  definition: "",
-  causes: "",
-  symptoms: "",
-  diagnosis: "",
-  treatment: "",
-  prevention: "",
+type DualFields = Record<MedicalSectionKey, DualContent>;
+
+const EMPTY_DUAL: DualFields = {
+  definition: { simple: "", professional: "" },
+  causes: { simple: "", professional: "" },
+  symptoms: { simple: "", professional: "" },
+  diagnosis: { simple: "", professional: "" },
+  treatment: { simple: "", professional: "" },
+  prevention: { simple: "", professional: "" },
 };
 
 const CMSPage = () => {
@@ -21,7 +23,7 @@ const CMSPage = () => {
   const [mainCategory, setMainCategory] = useState(getRootCategories()[0]?.slug ?? "");
   const [subcategory, setSubcategory] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
-  const [medical, setMedical] = useState<MedicalSections>({ ...EMPTY_MEDICAL });
+  const [medical, setMedical] = useState<DualFields>({ ...EMPTY_DUAL });
 
   // Category management state
   const [newCatName, setNewCatName] = useState("");
@@ -33,8 +35,8 @@ const CMSPage = () => {
   const selectedRoot = categories.find((c) => c.slug === mainCategory);
   const subcategories = selectedRoot ? getChildCategories(selectedRoot.id) : [];
 
-  const updateMedical = (key: keyof MedicalSections, value: string) => {
-    setMedical((prev) => ({ ...prev, [key]: value }));
+  const updateMedical = (key: MedicalSectionKey, layer: "simple" | "professional", value: string) => {
+    setMedical((prev) => ({ ...prev, [key]: { ...prev[key], [layer]: value } }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
