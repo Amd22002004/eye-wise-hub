@@ -25,10 +25,10 @@ const CategoryGrid = () => {
               >
                 <span className="text-2xl sm:text-3xl">{cat.icon}</span>
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm sm:text-base font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
+                  <span className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
                     {cat.name}
                   </span>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 line-clamp-2">{cat.description}</p>
+                  <p className="text-sm sm:text-base text-muted-foreground mt-1 line-clamp-2">{cat.description}</p>
                   {children.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-1.5 sm:gap-2">
                       {children.map((child) => (

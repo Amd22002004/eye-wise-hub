@@ -22,12 +22,12 @@ const HeroSearch = () => {
   };
 
   return (
-    <section className="relative flex flex-col items-center px-4 py-16 sm:py-20 md:py-28">
+    <section className="relative flex flex-col items-center px-5 py-20 sm:py-24 md:py-32">
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="mb-3 sm:mb-4 text-center"
+        className="mb-4 sm:mb-5 text-center text-[2.25rem] sm:text-[2.5rem] md:text-[2.75rem] leading-[1.15]"
       >
         Энциклопедия офтальмологии
       </motion.h1>
@@ -35,7 +35,7 @@ const HeroSearch = () => {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-        className="mb-8 sm:mb-10 max-w-xl text-center text-muted-foreground text-sm sm:text-base"
+        className="mb-10 sm:mb-12 max-w-xl text-center text-muted-foreground text-base sm:text-lg md:text-xl"
       >
         Достоверная медицинская информация для пациентов, студентов и врачей
       </motion.p>
