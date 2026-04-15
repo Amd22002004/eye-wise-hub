@@ -15,6 +15,10 @@ const ArticlesListPage = lazy(() => import("./pages/ArticlesListPage"));
 const CMSPage = lazy(() => import("./pages/CMSPage"));
 const ScientificPage = lazy(() => import("./pages/ScientificPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
+const GeneralInfoPage = lazy(() => import("./pages/GeneralInfoPage"));
+const DissertationsPage = lazy(() => import("./pages/DissertationsPage"));
+const DoctorsPage = lazy(() => import("./pages/DoctorsPage"));
+const ModernDirectionsPage = lazy(() => import("./pages/ModernDirectionsPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -44,6 +48,10 @@ const App = () => (
                   <Route path="/articles" element={<ArticlesListPage />} />
                   <Route path="/scientific" element={<ScientificPage />} />
                   <Route path="/about" element={<AboutPage />} />
+                  <Route path="/general-info" element={<GeneralInfoPage />} />
+                  <Route path="/dissertations" element={<DissertationsPage />} />
+                  <Route path="/doctors" element={<DoctorsPage />} />
+                  <Route path="/modern-directions" element={<ModernDirectionsPage />} />
                   <Route path="/cms" element={<CMSPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

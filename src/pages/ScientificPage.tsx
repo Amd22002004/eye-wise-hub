@@ -43,14 +43,14 @@ const ScientificPage = () => {
   }, [topic, author, year, type, search]);
 
   const selectClass =
-    "h-9 sm:h-10 rounded-xl border border-border bg-background px-2.5 sm:px-3 text-xs sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow duration-200";
+    "h-10 rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow duration-200";
 
   return (
     <div className="container max-w-5xl py-8 sm:py-12 md:py-16">
       <SEO title="Научные публикации" description="Исследования, диссертации и клинические данные в области офтальмологии. Фильтрация по теме, автору, году и типу." />
       <div className="mb-6 sm:mb-8">
         <h1 className="mb-2">Научные публикации</h1>
-        <p className="text-sm sm:text-base text-muted-foreground">Исследования, диссертации и клинические данные в области офтальмологии</p>
+        <p className="text-lg text-muted-foreground">Исследования, диссертации и клинические данные в области офтальмологии</p>
       </div>
 
       {/* Search */}
@@ -60,7 +60,7 @@ const ScientificPage = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Поиск по названию, автору или описанию…"
-          className="h-11 sm:h-12 w-full rounded-2xl border border-border bg-card pl-11 pr-4 text-sm text-foreground card-shadow placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow duration-200"
+          className="h-12 w-full rounded-2xl border border-border bg-card pl-11 pr-4 text-base text-foreground card-shadow placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow duration-200"
         />
       </div>
 
@@ -107,7 +107,7 @@ const ScientificPage = () => {
       </div>
 
       {/* Results count */}
-      <p className="mb-4 text-xs sm:text-sm text-muted-foreground">
+      <p className="mb-4 text-sm text-muted-foreground">
         Найдено: {filtered.length} {filtered.length === 1 ? "работа" : filtered.length < 5 ? "работы" : "работ"}
       </p>
 
@@ -135,17 +135,17 @@ const ScientificPage = () => {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="mb-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
-                      <span className="rounded-lg bg-accent px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-accent-foreground">
+                      <span className="rounded-lg bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground">
                         {PUBLICATION_TYPE_LABELS[work.type]}
                       </span>
-                      <span className="rounded-lg bg-accent px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-accent-foreground">
+                      <span className="rounded-lg bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground">
                         {work.topic}
                       </span>
-                      <span className="text-[11px] sm:text-xs text-muted-foreground">{work.year}</span>
+                      <span className="text-sm text-muted-foreground">{work.year}</span>
                     </div>
-                    <h3 className="mb-1.5 text-sm sm:text-base font-semibold text-foreground leading-snug">{work.title}</h3>
-                    <p className="mb-2 text-xs sm:text-sm leading-relaxed text-muted-foreground line-clamp-2">{work.abstract}</p>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] sm:text-xs text-muted-foreground">
+                    <h3 className="mb-1.5 text-base sm:text-lg font-semibold text-foreground leading-snug">{work.title}</h3>
+                    <p className="mb-2 text-base leading-relaxed text-muted-foreground line-clamp-2">{work.abstract}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                       <span className="font-medium text-foreground/70">{work.authors.join(", ")}</span>
                       {work.journal && (
                         <>

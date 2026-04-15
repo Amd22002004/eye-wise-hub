@@ -6,10 +6,13 @@ import { useState } from "react";
 const navItems = [
   { to: "/", label: "Главная" },
   { to: "/about", label: "О нас" },
+  { to: "/general-info", label: "Об офтальмологии" },
   { to: "/categories", label: "Разделы" },
   { to: "/articles", label: "Статьи" },
-  { to: "/scientific", label: "Научные работы" },
-  { to: "/cms", label: "Панель управления" },
+  { to: "/doctors", label: "Врачи" },
+  { to: "/scientific", label: "Публикации" },
+  { to: "/dissertations", label: "Диссертации" },
+  { to: "/modern-directions", label: "Направления" },
 ];
 
 const Navbar = () => {
@@ -20,14 +23,12 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-20 items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          {/* Logo - upload your logo to public/logo.png */}
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-            <img 
-              src="/logo.png" 
-              alt="ОфтальмоВики" 
+            <img
+              src="/logo.png"
+              alt="ОфтальмоВики"
               className="h-8 w-8 object-contain"
               onError={(e) => {
-                // Fallback to placeholder if logo not found
                 e.currentTarget.src = "/placeholder.svg";
               }}
             />
@@ -38,14 +39,14 @@ const Navbar = () => {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-0.5 lg:flex">
           {navItems.map((item) => {
             const active = location.pathname === item.to;
             return (
               <Link
                 key={item.to}
                 to={item.to}
-                className="relative px-4 py-2 text-base font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
               >
                 {active && (
                   <motion.span
@@ -63,7 +64,7 @@ const Navbar = () => {
         </nav>
 
         <button
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -75,7 +76,7 @@ const Navbar = () => {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="border-t border-border bg-card px-4 pb-4 md:hidden"
+          className="border-t border-border bg-card px-4 pb-4 lg:hidden"
         >
           {navItems.map((item) => (
             <Link
