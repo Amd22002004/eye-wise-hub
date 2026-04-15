@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Edit, Eye, FileText } from "lucide-react";
-import { articles, categories } from "@/data/mockData";
+import { Plus, Edit, Eye, FileText, Stethoscope } from "lucide-react";
+import { articles, categories, MEDICAL_SECTION_LABELS, MedicalSections } from "@/data/mockData";
 
 type Tab = "articles" | "new";
+
+const EMPTY_MEDICAL: MedicalSections = {
+  definition: "",
+  causes: "",
+  symptoms: "",
+  diagnosis: "",
+  treatment: "",
+  prevention: "",
+};
 
 const CMSPage = () => {
   const [tab, setTab] = useState<Tab>("articles");
@@ -11,12 +20,18 @@ const CMSPage = () => {
   const [excerpt, setExcerpt] = useState("");
   const [category, setCategory] = useState(categories[0]?.slug ?? "");
   const [status, setStatus] = useState<"draft" | "published">("draft");
+  const [medical, setMedical] = useState<MedicalSections>({ ...EMPTY_MEDICAL });
+
+  const updateMedical = (key: keyof MedicalSections, value: string) => {
+    setMedical((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert(`Статья «${title}» сохранена как ${status === "draft" ? "черновик" : "опубликованная"}`);
     setTitle("");
     setExcerpt("");
+    setMedical({ ...EMPTY_MEDICAL });
     setTab("articles");
   };
 
@@ -70,53 +85,86 @@ const CMSPage = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           onSubmit={handleSubmit}
-          className="space-y-6 rounded-2xl border border-border bg-card p-8 card-shadow"
+          className="space-y-8"
         >
-          <div>
-            <label className="mb-2 block text-sm font-medium text-foreground">Заголовок</label>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-              placeholder="Название статьи"
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-foreground">Краткое описание</label>
-            <textarea
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-              rows={3}
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-              placeholder="Описание статьи…"
-            />
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2">
+          {/* Basic info */}
+          <div className="rounded-2xl border border-border bg-card p-8 card-shadow space-y-6">
+            <h2 className="text-lg font-semibold text-foreground">Основная информация</h2>
             <div>
-              <label className="mb-2 block text-sm font-medium text-foreground">Категория</label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-              >
-                {categories.map((c) => (
-                  <option key={c.id} value={c.slug}>{c.name}</option>
-                ))}
-              </select>
+              <label className="mb-2 block text-sm font-medium text-foreground">Заголовок</label>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                placeholder="Название статьи"
+                required
+              />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-foreground">Статус</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as "draft" | "published")}
-                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-              >
-                <option value="draft">Черновик</option>
-                <option value="published">Опубликовать</option>
-              </select>
+              <label className="mb-2 block text-sm font-medium text-foreground">Краткое описание</label>
+              <textarea
+                value={excerpt}
+                onChange={(e) => setExcerpt(e.target.value)}
+                rows={3}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                placeholder="Описание статьи…"
+              />
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Категория</label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                >
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.slug}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Статус</label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as "draft" | "published")}
+                  className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                >
+                  <option value="draft">Черновик</option>
+                  <option value="published">Опубликовать</option>
+                </select>
+              </div>
             </div>
           </div>
+
+          {/* Medical content */}
+          <div className="rounded-2xl border border-border bg-card p-8 card-shadow space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/10">
+                <Stethoscope className="h-5 w-5 text-secondary" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">Медицинское содержание</h2>
+                <p className="text-xs text-muted-foreground">Структурированные разделы статьи</p>
+              </div>
+            </div>
+
+            {(Object.keys(MEDICAL_SECTION_LABELS) as (keyof MedicalSections)[]).map((key) => (
+              <div key={key}>
+                <label className="mb-2 block text-sm font-medium text-foreground">
+                  {MEDICAL_SECTION_LABELS[key]}
+                </label>
+                <textarea
+                  value={medical[key] ?? ""}
+                  onChange={(e) => updateMedical(key, e.target.value)}
+                  rows={4}
+                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground leading-relaxed transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                  placeholder={`Введите раздел «${MEDICAL_SECTION_LABELS[key]}»…`}
+                />
+              </div>
+            ))}
+          </div>
+
           <button
             type="submit"
             className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
