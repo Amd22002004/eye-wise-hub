@@ -19,10 +19,10 @@ const ArticleCard = ({ article, index = 0 }: Props) => (
       className="group flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 card-shadow hover:card-shadow-hover"
     >
       <span className="text-sm font-medium text-secondary">{article.category}</span>
-      <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200 leading-snug">
+      <h3 className="text-lg sm:text-xl font-semibold text-foreground group-hover:text-primary transition-colors duration-200 leading-snug">
         {article.title}
       </h3>
-      <p className="text-base text-muted-foreground line-clamp-2 leading-relaxed">{article.excerpt}</p>
+      <p className="text-base sm:text-lg text-muted-foreground line-clamp-2 leading-relaxed">{article.excerpt}</p>
       <div className="mt-auto flex flex-col gap-1 pt-3 border-t border-border/50 text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
           <span className="font-medium text-foreground/80 truncate">{article.author}</span>

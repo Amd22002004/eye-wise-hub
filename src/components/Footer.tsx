@@ -3,8 +3,8 @@ const Footer = () => (
     <div className="container flex flex-col items-center gap-6 text-center">
       {/* Main branding */}
       <div className="flex flex-col items-center gap-1">
-        <span className="text-base font-semibold text-foreground">Ассоциация офтальмологических клиник</span>
-        <span className="text-sm text-muted-foreground">ОфтальмоВики — справочник для пациентов и специалистов</span>
+        <span className="text-lg font-semibold text-foreground">Ассоциация офтальмологических клиник</span>
+        <span className="text-base text-muted-foreground">ОфтальмоВики — справочник для пациентов и специалистов</span>
       </div>
 
       {/* Legal info */}
