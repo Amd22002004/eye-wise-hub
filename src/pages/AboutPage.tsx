@@ -34,6 +34,17 @@ const AboutPage = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="О нас"
+        description="Ассоциация офтальмологических клиник — профессиональное сообщество для развития офтальмологии и защиты зрения."
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Ассоциация офтальмологических клиник",
+          alternateName: "ОфтальмоВики",
+          description: "Профессиональное сообщество для развития офтальмологии",
+        }}
+      />
       {/* Hero Section */}
       <section className="border-b border-border bg-gradient-to-b from-primary/5 to-transparent py-20">
         <div className="container">
