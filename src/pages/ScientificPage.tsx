@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Search, Filter, BookOpen, GraduationCap, FlaskConical, FileText } from "lucide-react";
 import { scientificWorks, PUBLICATION_TYPE_LABELS, type PublicationType } from "@/data/scientificData";
+import SEO from "@/components/SEO";
 
 const ALL = "__all__";
 
@@ -46,6 +47,7 @@ const ScientificPage = () => {
 
   return (
     <div className="container max-w-5xl py-8 sm:py-12 md:py-16">
+      <SEO title="Научные публикации" description="Исследования, диссертации и клинические данные в области офтальмологии. Фильтрация по теме, автору, году и типу." />
       <div className="mb-6 sm:mb-8">
         <h1 className="mb-2">Научные публикации</h1>
         <p className="text-sm sm:text-base text-muted-foreground">Исследования, диссертации и клинические данные в области офтальмологии</p>

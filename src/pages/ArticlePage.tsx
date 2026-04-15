@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { ArrowLeft, Clock, User, List, Sparkles, Heart, GraduationCap, ShieldCheck, Info, CalendarClock } from "lucide-react";
 import { articles, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
+import SEO from "@/components/SEO";
 
 function getRelatedArticles(current: Article, all: Article[], max = 5): Article[] {
   const keywords = extractKeywords(current.title + " " + current.excerpt);
@@ -71,6 +72,20 @@ const ArticlePage = () => {
       transition={{ duration: 0.3 }}
       className="container max-w-3xl py-8 sm:py-12 md:py-16"
     >
+      <SEO
+        title={article.title}
+        description={article.excerpt}
+        type="article"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "MedicalWebPage",
+          name: article.title,
+          description: article.excerpt,
+          author: { "@type": "Person", name: article.author, jobTitle: article.authorRole },
+          dateModified: article.date,
+          medicalAudience: { "@type": "MedicalAudience", audienceType: "Patient" },
+        }}
+      />
       <Link to="/" className="mb-6 sm:mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
         <ArrowLeft className="h-4 w-4" /> Назад
       </Link>

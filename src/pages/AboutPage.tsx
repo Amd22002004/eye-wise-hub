@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Shield, Eye, Users, BookOpen, Award, HeartPulse } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const AboutPage = () => {
   const fadeIn = {
