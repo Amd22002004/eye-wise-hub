@@ -1,25 +1,20 @@
 import { useParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
-import { ArrowLeft, Clock, User, BookOpen, List, Sparkles } from "lucide-react";
-import { articles, MEDICAL_SECTION_LABELS, MedicalSections, type Article } from "@/data/mockData";
+import { ArrowLeft, Clock, User, List, Sparkles, Heart, GraduationCap } from "lucide-react";
+import { articles, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
 
 /** Score and return top 3–5 related articles by category, subcategory, and keyword overlap. */
 function getRelatedArticles(current: Article, all: Article[], max = 5): Article[] {
   const keywords = extractKeywords(current.title + " " + current.excerpt);
-
   const scored = all
     .filter((a) => a.id !== current.id)
     .map((a) => {
       let score = 0;
-      // Same main category
       if (a.categorySlug === current.categorySlug) score += 3;
-      // Same subcategory
       if (current.subcategorySlug && a.subcategorySlug === current.subcategorySlug) score += 4;
-      // Manually linked
       if (current.relatedIds.includes(a.id)) score += 5;
-      // Keyword overlap
       const otherKw = extractKeywords(a.title + " " + a.excerpt);
       const overlap = keywords.filter((k) => otherKw.includes(k)).length;
       score += overlap * 2;
@@ -28,7 +23,6 @@ function getRelatedArticles(current: Article, all: Article[], max = 5): Article[
     .filter((r) => r.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, max);
-
   return scored.map((r) => r.article);
 }
 
@@ -41,10 +35,12 @@ function extractKeywords(text: string): string[] {
     .filter((w) => w.length > 3 && !stopWords.has(w));
 }
 
+type ViewMode = "simple" | "professional";
+
 const ArticlePage = () => {
   const { slug } = useParams();
   const article = articles.find((a) => a.slug === slug);
-  const [simpleMode, setSimpleMode] = useState(false);
+  const [mode, setMode] = useState<ViewMode>("simple");
   const related = useMemo(() => (article ? getRelatedArticles(article, articles) : []), [article]);
 
   if (!article) {
@@ -56,14 +52,15 @@ const ArticlePage = () => {
     );
   }
 
-  // Build TOC from medical sections + legacy sections
+  // Build TOC from medical sections
   const medicalKeys = article.medicalSections
-    ? (Object.keys(MEDICAL_SECTION_LABELS) as (keyof MedicalSections)[]).filter(
+    ? (Object.keys(MEDICAL_SECTION_LABELS) as MedicalSectionKey[]).filter(
         (k) => article.medicalSections?.[k]
       )
     : [];
 
   const hasMedical = medicalKeys.length > 0;
+  const hasDualContent = hasMedical; // dual content lives in medicalSections
 
   const tocItems = hasMedical
     ? medicalKeys.map((k) => ({ id: `section-${k}`, label: MEDICAL_SECTION_LABELS[k] }))
@@ -91,22 +88,30 @@ const ArticlePage = () => {
         <span>{article.date}</span>
       </div>
 
-      {/* Simple / Professional toggle */}
-      {article.sections.some((s) => s.simpleContent) && (
-        <div className="mb-8 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 card-shadow">
-          <BookOpen className="h-5 w-5 shrink-0 text-secondary" />
-          <span className="text-sm text-muted-foreground">Режим:</span>
+      {/* Dual-layer toggle */}
+      {hasDualContent && (
+        <div className="mb-8 rounded-2xl border border-border bg-card p-1.5 card-shadow inline-flex gap-1">
           <button
-            onClick={() => setSimpleMode(false)}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors duration-200 ${!simpleMode ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent"}`}
+            onClick={() => setMode("simple")}
+            className={`flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition-all duration-200 ${
+              mode === "simple"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+            }`}
           >
-            Профессиональный
+            <Heart className="h-4 w-4" />
+            Для пациентов
           </button>
           <button
-            onClick={() => setSimpleMode(true)}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors duration-200 ${simpleMode ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent"}`}
+            onClick={() => setMode("professional")}
+            className={`flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition-all duration-200 ${
+              mode === "professional"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+            }`}
           >
-            Простой
+            <GraduationCap className="h-4 w-4" />
+            Для специалистов
           </button>
         </div>
       )}
@@ -136,23 +141,36 @@ const ArticlePage = () => {
       {/* Article content */}
       <div className="space-y-10">
         {hasMedical
-          ? medicalKeys.map((key, i) => (
-              <motion.section
-                key={key}
-                id={`section-${key}`}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
-                className="scroll-mt-24"
-              >
-                <h2 className="mb-3 text-xl font-semibold text-foreground">
-                  {MEDICAL_SECTION_LABELS[key]}
-                </h2>
-                <p className="leading-relaxed text-muted-foreground">
-                  {article.medicalSections![key]}
-                </p>
-              </motion.section>
-            ))
+          ? medicalKeys.map((key, i) => {
+              const section = article.medicalSections![key]!;
+              const text = section[mode];
+              return (
+                <motion.section
+                  key={key}
+                  id={`section-${key}`}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: i * 0.05 }}
+                  className="scroll-mt-24"
+                >
+                  <h2 className="mb-3 text-xl font-semibold text-foreground">
+                    {MEDICAL_SECTION_LABELS[key]}
+                  </h2>
+                  <AnimatePresence mode="wait">
+                    <motion.p
+                      key={mode}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.2 }}
+                      className="leading-relaxed text-muted-foreground"
+                    >
+                      {text}
+                    </motion.p>
+                  </AnimatePresence>
+                </motion.section>
+              );
+            })
           : article.sections.map((section, i) => (
               <motion.section
                 key={i}
@@ -163,9 +181,7 @@ const ArticlePage = () => {
                 className="scroll-mt-24"
               >
                 <h2 className="mb-3 text-xl font-semibold text-foreground">{section.title}</h2>
-                <p className="leading-relaxed text-muted-foreground">
-                  {simpleMode && section.simpleContent ? section.simpleContent : section.content}
-                </p>
+                <p className="leading-relaxed text-muted-foreground">{section.content}</p>
               </motion.section>
             ))}
       </div>

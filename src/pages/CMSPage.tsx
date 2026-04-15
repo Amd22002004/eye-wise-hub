@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Edit, Eye, FileText, Stethoscope, FolderTree } from "lucide-react";
-import { articles, categories, MEDICAL_SECTION_LABELS, MedicalSections, getRootCategories, getChildCategories } from "@/data/mockData";
+import { articles, categories, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type DualContent, getRootCategories, getChildCategories } from "@/data/mockData";
 
 type Tab = "articles" | "new" | "categories";
 
-const EMPTY_MEDICAL: MedicalSections = {
-  definition: "",
-  causes: "",
-  symptoms: "",
-  diagnosis: "",
-  treatment: "",
-  prevention: "",
+type DualFields = Record<MedicalSectionKey, DualContent>;
+
+const EMPTY_DUAL: DualFields = {
+  definition: { simple: "", professional: "" },
+  causes: { simple: "", professional: "" },
+  symptoms: { simple: "", professional: "" },
+  diagnosis: { simple: "", professional: "" },
+  treatment: { simple: "", professional: "" },
+  prevention: { simple: "", professional: "" },
 };
 
 const CMSPage = () => {
@@ -21,7 +23,7 @@ const CMSPage = () => {
   const [mainCategory, setMainCategory] = useState(getRootCategories()[0]?.slug ?? "");
   const [subcategory, setSubcategory] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
-  const [medical, setMedical] = useState<MedicalSections>({ ...EMPTY_MEDICAL });
+  const [medical, setMedical] = useState<DualFields>({ ...EMPTY_DUAL });
 
   // Category management state
   const [newCatName, setNewCatName] = useState("");
@@ -33,8 +35,8 @@ const CMSPage = () => {
   const selectedRoot = categories.find((c) => c.slug === mainCategory);
   const subcategories = selectedRoot ? getChildCategories(selectedRoot.id) : [];
 
-  const updateMedical = (key: keyof MedicalSections, value: string) => {
-    setMedical((prev) => ({ ...prev, [key]: value }));
+  const updateMedical = (key: MedicalSectionKey, layer: "simple" | "professional", value: string) => {
+    setMedical((prev) => ({ ...prev, [key]: { ...prev[key], [layer]: value } }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,7 +44,7 @@ const CMSPage = () => {
     alert(`Статья «${title}» сохранена как ${status === "draft" ? "черновик" : "опубликованная"}`);
     setTitle("");
     setExcerpt("");
-    setMedical({ ...EMPTY_MEDICAL });
+    setMedical({ ...EMPTY_DUAL });
     setTab("articles");
   };
 
@@ -194,18 +196,31 @@ const CMSPage = () => {
               </div>
             </div>
 
-            {(Object.keys(MEDICAL_SECTION_LABELS) as (keyof MedicalSections)[]).map((key) => (
-              <div key={key}>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+            {(Object.keys(MEDICAL_SECTION_LABELS) as MedicalSectionKey[]).map((key) => (
+              <div key={key} className="space-y-3">
+                <p className="text-sm font-semibold text-foreground">
                   {MEDICAL_SECTION_LABELS[key]}
-                </label>
-                <textarea
-                  value={medical[key] ?? ""}
-                  onChange={(e) => updateMedical(key, e.target.value)}
-                  rows={4}
-                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground leading-relaxed transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-                  placeholder={`Введите раздел «${MEDICAL_SECTION_LABELS[key]}»…`}
-                />
+                </p>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Для пациентов (простое объяснение)</label>
+                  <textarea
+                    value={medical[key].simple}
+                    onChange={(e) => updateMedical(key, "simple", e.target.value)}
+                    rows={3}
+                    className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground leading-relaxed transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                    placeholder={`Простое объяснение раздела «${MEDICAL_SECTION_LABELS[key]}»…`}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Для специалистов (профессиональное)</label>
+                  <textarea
+                    value={medical[key].professional}
+                    onChange={(e) => updateMedical(key, "professional", e.target.value)}
+                    rows={3}
+                    className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground leading-relaxed transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                    placeholder={`Профессиональное описание раздела «${MEDICAL_SECTION_LABELS[key]}»…`}
+                  />
+                </div>
               </div>
             ))}
           </div>
