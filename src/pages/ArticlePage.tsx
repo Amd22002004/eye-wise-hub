@@ -54,8 +54,7 @@ const ArticlePage = () => {
       </div>
     );
   }
-
-  const related = articles.filter((a) => article.relatedIds.includes(a.id));
+  const related = useMemo(() => getRelatedArticles(article, articles), [article]);
 
   // Build TOC from medical sections + legacy sections
   const medicalKeys = article.medicalSections
@@ -180,8 +179,11 @@ const ArticlePage = () => {
       {/* Related articles */}
       {related.length > 0 && (
         <section className="mt-16">
-          <h2 className="mb-6">Связанные статьи</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="mb-6 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-secondary" />
+            <h2 className="mb-0">Связанные статьи</h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((a, i) => (
               <ArticleCard key={a.id} article={a} index={i} />
             ))}
