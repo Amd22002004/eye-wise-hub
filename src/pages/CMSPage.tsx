@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Edit, Eye, FileText, Stethoscope } from "lucide-react";
-import { articles, categories, MEDICAL_SECTION_LABELS, MedicalSections } from "@/data/mockData";
+import { Plus, Edit, Eye, FileText, Stethoscope, FolderTree } from "lucide-react";
+import { articles, categories, MEDICAL_SECTION_LABELS, MedicalSections, getRootCategories, getChildCategories } from "@/data/mockData";
 
-type Tab = "articles" | "new";
+type Tab = "articles" | "new" | "categories";
 
 const EMPTY_MEDICAL: MedicalSections = {
   definition: "",
@@ -18,9 +18,20 @@ const CMSPage = () => {
   const [tab, setTab] = useState<Tab>("articles");
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
-  const [category, setCategory] = useState(categories[0]?.slug ?? "");
+  const [mainCategory, setMainCategory] = useState(getRootCategories()[0]?.slug ?? "");
+  const [subcategory, setSubcategory] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [medical, setMedical] = useState<MedicalSections>({ ...EMPTY_MEDICAL });
+
+  // Category management state
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatDesc, setNewCatDesc] = useState("");
+  const [newCatParent, setNewCatParent] = useState("");
+  const [newCatIcon, setNewCatIcon] = useState("📁");
+
+  const roots = getRootCategories();
+  const selectedRoot = categories.find((c) => c.slug === mainCategory);
+  const subcategories = selectedRoot ? getChildCategories(selectedRoot.id) : [];
 
   const updateMedical = (key: keyof MedicalSections, value: string) => {
     setMedical((prev) => ({ ...prev, [key]: value }));
@@ -35,15 +46,26 @@ const CMSPage = () => {
     setTab("articles");
   };
 
+  const handleCategorySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const parentLabel = newCatParent ? categories.find(c => c.id === newCatParent)?.name : "корневая";
+    alert(`Категория «${newCatName}» создана (родитель: ${parentLabel})`);
+    setNewCatName("");
+    setNewCatDesc("");
+    setNewCatParent("");
+    setNewCatIcon("📁");
+  };
+
   return (
     <div className="container max-w-4xl py-10">
       <h1 className="mb-8">Панель управления</h1>
 
-      <div className="mb-8 flex gap-2">
-        {[
+      <div className="mb-8 flex flex-wrap gap-2">
+        {([
           { key: "articles" as Tab, label: "Статьи", icon: FileText },
           { key: "new" as Tab, label: "Новая статья", icon: Plus },
-        ].map(({ key, label, icon: Icon }) => (
+          { key: "categories" as Tab, label: "Категории", icon: FolderTree },
+        ]).map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
@@ -56,6 +78,7 @@ const CMSPage = () => {
         ))}
       </div>
 
+      {/* Articles list */}
       {tab === "articles" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
           {articles.map((a) => (
@@ -65,7 +88,11 @@ const CMSPage = () => {
             >
               <div>
                 <p className="font-semibold text-foreground">{a.title}</p>
-                <p className="text-xs text-muted-foreground">{a.category} · {a.author} · {a.date}</p>
+                <p className="text-xs text-muted-foreground">
+                  {a.category}
+                  {a.subcategorySlug && ` → ${categories.find(c => c.slug === a.subcategorySlug)?.name ?? a.subcategorySlug}`}
+                  {" · "}{a.author} · {a.date}
+                </p>
               </div>
               <div className="flex gap-2">
                 <button className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
@@ -80,6 +107,7 @@ const CMSPage = () => {
         </motion.div>
       )}
 
+      {/* New article form */}
       {tab === "new" && (
         <motion.form
           initial={{ opacity: 0 }}
@@ -110,30 +138,47 @@ const CMSPage = () => {
                 placeholder="Описание статьи…"
               />
             </div>
+
+            {/* Category selectors */}
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">Категория</label>
+                <label className="mb-2 block text-sm font-medium text-foreground">Основная категория</label>
                 <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  value={mainCategory}
+                  onChange={(e) => { setMainCategory(e.target.value); setSubcategory(""); }}
                   className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
                 >
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.slug}>{c.name}</option>
+                  {roots.map((c) => (
+                    <option key={c.id} value={c.slug}>{c.icon} {c.name}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">Статус</label>
+                <label className="mb-2 block text-sm font-medium text-foreground">Подкатегория</label>
                 <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as "draft" | "published")}
+                  value={subcategory}
+                  onChange={(e) => setSubcategory(e.target.value)}
                   className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                  disabled={subcategories.length === 0}
                 >
-                  <option value="draft">Черновик</option>
-                  <option value="published">Опубликовать</option>
+                  <option value="">— Без подкатегории —</option>
+                  {subcategories.map((c) => (
+                    <option key={c.id} value={c.slug}>{c.icon} {c.name}</option>
+                  ))}
                 </select>
               </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-foreground">Статус</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as "draft" | "published")}
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+              >
+                <option value="draft">Черновик</option>
+                <option value="published">Опубликовать</option>
+              </select>
             </div>
           </div>
 
@@ -172,6 +217,96 @@ const CMSPage = () => {
             Сохранить статью
           </button>
         </motion.form>
+      )}
+
+      {/* Categories management */}
+      {tab === "categories" && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+          {/* Category tree */}
+          <div className="rounded-2xl border border-border bg-card p-6 card-shadow">
+            <h2 className="text-lg font-semibold text-foreground mb-4">Структура категорий</h2>
+            <div className="space-y-3">
+              {roots.map((root) => {
+                const children = getChildCategories(root.id);
+                return (
+                  <div key={root.id}>
+                    <div className="flex items-center gap-3 rounded-xl bg-accent/50 p-3">
+                      <span className="text-lg">{root.icon}</span>
+                      <span className="font-medium text-foreground">{root.name}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">{root.articleCount} статей</span>
+                    </div>
+                    {children.length > 0 && (
+                      <div className="ml-8 mt-1.5 space-y-1.5">
+                        {children.map((child) => (
+                          <div key={child.id} className="flex items-center gap-3 rounded-lg border border-border/50 p-2.5 pl-4">
+                            <span className="text-sm">{child.icon}</span>
+                            <span className="text-sm text-foreground">{child.name}</span>
+                            <span className="text-xs text-muted-foreground ml-auto">{child.articleCount}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Add category form */}
+          <form onSubmit={handleCategorySubmit} className="rounded-2xl border border-border bg-card p-8 card-shadow space-y-6">
+            <h2 className="text-lg font-semibold text-foreground">Добавить категорию</h2>
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Название</label>
+                <input
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                  className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                  placeholder="Название категории"
+                  required
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Иконка</label>
+                <input
+                  value={newCatIcon}
+                  onChange={(e) => setNewCatIcon(e.target.value)}
+                  className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                  placeholder="📁"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-foreground">Описание</label>
+              <textarea
+                value={newCatDesc}
+                onChange={(e) => setNewCatDesc(e.target.value)}
+                rows={2}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                placeholder="Краткое описание категории…"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-foreground">Родительская категория</label>
+              <select
+                value={newCatParent}
+                onChange={(e) => setNewCatParent(e.target.value)}
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+              >
+                <option value="">— Корневая категория —</option>
+                {roots.map((c) => (
+                  <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="submit"
+              className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
+            >
+              Создать категорию
+            </button>
+          </form>
+        </motion.div>
       )}
     </div>
   );
