@@ -45,6 +45,7 @@ const ArticlePage = () => {
   const { slug } = useParams();
   const article = articles.find((a) => a.slug === slug);
   const [simpleMode, setSimpleMode] = useState(false);
+  const related = useMemo(() => (article ? getRelatedArticles(article, articles) : []), [article]);
 
   if (!article) {
     return (
@@ -54,7 +55,6 @@ const ArticlePage = () => {
       </div>
     );
   }
-  const related = useMemo(() => getRelatedArticles(article, articles), [article]);
 
   // Build TOC from medical sections + legacy sections
   const medicalKeys = article.medicalSections
