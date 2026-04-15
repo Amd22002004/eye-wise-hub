@@ -34,7 +34,7 @@ const Navbar = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-bold text-foreground leading-tight">ОфтальмоВики</span>
-            <span className="text-xs text-muted-foreground leading-tight">Ассоциация офтальмологических клиник</span>
+            <span className="text-sm text-muted-foreground leading-tight">Ассоциация офтальмологических клиник</span>
           </div>
         </Link>
 

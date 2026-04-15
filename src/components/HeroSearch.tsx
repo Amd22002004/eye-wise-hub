@@ -27,7 +27,7 @@ const HeroSearch = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="mb-4 sm:mb-5 text-center text-[2.25rem] sm:text-[2.5rem] md:text-[2.75rem] leading-[1.15]"
+        className="mb-4 sm:mb-5 text-center text-[2.5rem] sm:text-[3rem] md:text-[3.5rem] leading-[1.15]"
       >
         Энциклопедия офтальмологии
       </motion.h1>
@@ -35,7 +35,7 @@ const HeroSearch = () => {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-        className="mb-10 sm:mb-12 max-w-xl text-center text-muted-foreground text-base sm:text-lg md:text-xl"
+        className="mb-10 sm:mb-12 max-w-xl text-center text-muted-foreground text-lg sm:text-xl md:text-2xl"
       >
         Достоверная медицинская информация для пациентов, студентов и врачей
       </motion.p>
