@@ -8,14 +8,14 @@ const Footer = () => (
       </div>
 
       {/* Legal info */}
-      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground/70">
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-muted-foreground/70">
         <span>ОГРН: 1234567890123</span>
         <span className="hidden sm:inline">·</span>
         <span>ИНН/КПП: 1234567890 / 123456789</span>
       </div>
 
       {/* Copyright */}
-      <p className="text-xs text-muted-foreground/60">
+      <p className="text-sm text-muted-foreground/60">
         © 2025 Ассоциация офтальмологических клиник. Информация не заменяет консультацию врача.
       </p>
     </div>
