@@ -3,6 +3,15 @@ import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { getRootCategories, getChildCategories } from "@/data/mockData";
 
+// Sections that have dedicated pages instead of generic /categories/:slug
+const DEDICATED_ROUTES: Record<string, string> = {
+  "general-info": "/general-info",
+  "research": "/scientific",
+  "dissertations": "/dissertations",
+  "doctors": "/doctors",
+  "modern-directions": "/modern-directions",
+};
+
 const CategoryGrid = () => {
   const roots = getRootCategories();
 
@@ -12,6 +21,7 @@ const CategoryGrid = () => {
       <div className="space-y-4 sm:space-y-5">
         {roots.map((cat, i) => {
           const children = getChildCategories(cat.id);
+          const href = DEDICATED_ROUTES[cat.slug] || `/categories/${cat.slug}`;
           return (
             <motion.div
               key={cat.id}
@@ -20,7 +30,7 @@ const CategoryGrid = () => {
               transition={{ duration: 0.35, delay: i * 0.06, ease: "easeOut" }}
             >
               <Link
-                to={`/categories/${cat.slug}`}
+                to={href}
                 className="group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 card-shadow hover:card-shadow-hover"
               >
                 <span className="text-2xl sm:text-3xl">{cat.icon}</span>
