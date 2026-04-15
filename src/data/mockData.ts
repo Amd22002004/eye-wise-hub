@@ -61,12 +61,20 @@ export const getCategoryById = (id: string) => categories.find((c) => c.id === i
 export const getCategoryBySlug = (slug: string) => categories.find((c) => c.slug === slug);
 
 export const categories: Category[] = [
+  { id: "0", slug: "general-info", name: "Общая информация", description: "Основы офтальмологии, анатомия глаза, зрительный анализатор", articleCount: 4, icon: "📖" },
   { id: "1", slug: "diseases", name: "Заболевания глаз", description: "Полная информация о заболеваниях органа зрения", articleCount: 42, icon: "👁️" },
   { id: "2", slug: "diagnostics", name: "Диагностика", description: "Методы обследования и диагностики", articleCount: 18, icon: "🔬" },
   { id: "3", slug: "treatment", name: "Лечение", description: "Современные методы лечения и хирургии", articleCount: 35, icon: "💊" },
   { id: "4", slug: "prevention", name: "Профилактика", description: "Рекомендации по сохранению зрения", articleCount: 15, icon: "🛡️" },
   { id: "5", slug: "research", name: "Научные публикации", description: "Исследования и клинические данные", articleCount: 27, icon: "📊" },
   { id: "6", slug: "legal", name: "Нормативные документы", description: "Законы и стандарты в офтальмологии", articleCount: 12, icon: "📜" },
+  { id: "7", slug: "dissertations", name: "Диссертации", description: "Кандидатские и докторские диссертации", articleCount: 7, icon: "🎓" },
+  { id: "8", slug: "doctors", name: "Врачи-офтальмологи", description: "Ведущие специалисты и их профили", articleCount: 4, icon: "👨‍⚕️" },
+  { id: "9", slug: "modern-directions", name: "Современные направления", description: "ИИ, генетика, телемедицина и новые технологии", articleCount: 4, icon: "🚀" },
+  { id: "001", slug: "what-is-ophthalmology", name: "Что такое офтальмология", description: "Введение в науку о зрении", articleCount: 1, icon: "📘", parentId: "0" },
+  { id: "002", slug: "eye-anatomy", name: "Анатомия и физиология глаза", description: "Строение и функции органа зрения", articleCount: 1, icon: "🧬", parentId: "0" },
+  { id: "003", slug: "visual-analyzer", name: "Зрительный анализатор", description: "От сетчатки до зрительной коры", articleCount: 1, icon: "🧠", parentId: "0" },
+  { id: "004", slug: "age-vision", name: "Возрастные особенности зрения", description: "Зрение от рождения до старости", articleCount: 1, icon: "👶", parentId: "0" },
   { id: "101", slug: "glaucoma-cat", name: "Глаукома", description: "Виды глаукомы, диагностика и лечение", articleCount: 8, icon: "🔵", parentId: "1" },
   { id: "102", slug: "cataract-cat", name: "Катаракта", description: "Помутнение хрусталика и методы лечения", articleCount: 6, icon: "⚪", parentId: "1" },
   { id: "103", slug: "retina", name: "Заболевания сетчатки", description: "Дегенерации, отслойки и дистрофии сетчатки", articleCount: 10, icon: "🟠", parentId: "1" },
