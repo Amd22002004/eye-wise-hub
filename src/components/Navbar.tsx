@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
@@ -17,12 +17,24 @@ const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-            <Eye className="h-5 w-5 text-primary-foreground" />
+      <div className="container flex h-20 items-center justify-between">
+        <Link to="/" className="flex items-center gap-3">
+          {/* Logo - upload your logo to public/logo.png */}
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <img 
+              src="/logo.png" 
+              alt="ОфтальмоВики" 
+              className="h-8 w-8 object-contain"
+              onError={(e) => {
+                // Fallback to placeholder if logo not found
+                e.currentTarget.src = "/placeholder.svg";
+              }}
+            />
           </div>
-          <span className="text-lg font-bold text-foreground">ОфтальмоВики</span>
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-foreground leading-tight">ОфтальмоВики</span>
+            <span className="text-xs text-muted-foreground leading-tight">Ассоциация офтальмологических клиник</span>
+          </div>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
