@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
-import { ArrowLeft, Clock, User, List, Sparkles, Heart, GraduationCap } from "lucide-react";
+import { ArrowLeft, Clock, User, List, Sparkles, Heart, GraduationCap, ShieldCheck, Info, CalendarClock } from "lucide-react";
 import { articles, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
 
@@ -82,10 +82,19 @@ const ArticlePage = () => {
       </span>
       <h1 className="mb-4">{article.title}</h1>
 
-      <div className="mb-8 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+      <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
         <span className="flex items-center gap-1.5"><User className="h-4 w-4" />{article.author}</span>
+        <span className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-secondary" />{article.authorRole}</span>
         <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" />{article.readTime}</span>
-        <span>{article.date}</span>
+        <span className="flex items-center gap-1.5"><CalendarClock className="h-4 w-4" />Обновлено: {article.date}</span>
+      </div>
+
+      {/* Medical disclaimer */}
+      <div className="mb-8 flex items-start gap-2.5 rounded-xl bg-accent/60 px-4 py-3">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          Информация носит ознакомительный характер и не заменяет консультацию врача.
+        </p>
       </div>
 
       {/* Dual-layer toggle */}
@@ -187,9 +196,17 @@ const ArticlePage = () => {
       </div>
 
       {/* Author card */}
-      <div className="mt-10 rounded-2xl border border-border bg-accent/50 p-5">
-        <p className="text-sm font-medium text-foreground">{article.author}</p>
-        <p className="text-xs text-muted-foreground">{article.authorRole}</p>
+      <div className="mt-10 rounded-2xl border border-border bg-accent/50 p-6">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+            {article.author.charAt(0)}
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">{article.author}</p>
+            <p className="text-xs text-secondary">{article.authorRole}</p>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">Последнее обновление: {article.date}</p>
       </div>
 
       {/* Related articles */}

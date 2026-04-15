@@ -22,10 +22,13 @@ const ArticleCard = ({ article, index = 0 }: Props) => (
         {article.title}
       </h3>
       <p className="text-sm text-muted-foreground line-clamp-2">{article.excerpt}</p>
-      <div className="mt-auto flex items-center gap-3 pt-2 text-xs text-muted-foreground">
-        <span>{article.author}</span>
-        <span>·</span>
-        <span>{article.readTime}</span>
+      <div className="mt-auto flex flex-col gap-1.5 pt-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-foreground/80">{article.author}</span>
+          <span>·</span>
+          <span>{article.readTime}</span>
+        </div>
+        <span className="text-[11px] text-muted-foreground/70">{article.authorRole}</span>
       </div>
     </Link>
   </motion.div>
