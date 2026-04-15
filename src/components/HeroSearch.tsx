@@ -53,7 +53,7 @@ const HeroSearch = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Поиск заболеваний, методов лечения…"
-            className="h-12 sm:h-14 w-full rounded-2xl border border-border bg-card pl-12 sm:pl-14 pr-5 text-sm sm:text-base shadow-sm transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:card-shadow-hover"
+            className="h-12 sm:h-14 w-full rounded-2xl border border-border bg-card pl-12 sm:pl-14 pr-5 text-base shadow-sm transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:card-shadow-hover"
           />
         </div>
 

@@ -45,7 +45,7 @@ const Navbar = () => {
               <Link
                 key={item.to}
                 to={item.to}
-                className="relative px-4 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                className="relative px-4 py-2 text-base font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
               >
                 {active && (
                   <motion.span
@@ -82,7 +82,7 @@ const Navbar = () => {
               key={item.to}
               to={item.to}
               onClick={() => setMobileOpen(false)}
-              className="block rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="block rounded-lg px-4 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               {item.label}
             </Link>

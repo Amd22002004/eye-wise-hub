@@ -25,10 +25,10 @@ const CategoryGrid = () => {
               >
                 <span className="text-2xl sm:text-3xl">{cat.icon}</span>
                 <div className="flex-1 min-w-0">
-                  <span className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
+                  <span className="text-lg sm:text-xl font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
                     {cat.name}
                   </span>
-                  <p className="text-sm sm:text-base text-muted-foreground mt-1 line-clamp-2">{cat.description}</p>
+                  <p className="text-base sm:text-lg text-muted-foreground mt-1 line-clamp-2">{cat.description}</p>
                   {children.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-1.5 sm:gap-2">
                       {children.map((child) => (
@@ -36,7 +36,7 @@ const CategoryGrid = () => {
                           key={child.id}
                           to={`/categories/${child.slug}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 rounded-lg bg-accent px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-accent-foreground hover:bg-muted transition-colors duration-200"
+                          className="inline-flex items-center gap-1 rounded-lg bg-accent px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-accent-foreground hover:bg-muted transition-colors duration-200"
                         >
                           <span>{child.icon}</span>
                           {child.name}
@@ -47,7 +47,7 @@ const CategoryGrid = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                  <span className="text-[11px] sm:text-xs font-medium text-secondary">{cat.articleCount} статей</span>
+                  <span className="text-xs sm:text-sm font-medium text-secondary">{cat.articleCount} статей</span>
                   <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
               </Link>
