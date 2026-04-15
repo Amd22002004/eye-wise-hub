@@ -21,30 +21,27 @@ const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
-      <div className="container flex h-20 items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
+      <div className="container flex h-16 items-center justify-between gap-4">
+        <Link to="/" className="flex items-center gap-2.5 shrink-0">
           <img
             src="/logo.png"
             alt="ОфтальмоВики"
-            className="h-12 w-12 object-contain"
+            className="h-10 w-10 object-contain"
             onError={(e) => {
               e.currentTarget.src = "/placeholder.svg";
             }}
           />
-          <div className="flex flex-col">
-            <span className="text-lg font-bold text-foreground leading-tight">ОфтальмоВики</span>
-            <span className="text-sm text-muted-foreground leading-tight">Ассоциация офтальмологических клиник</span>
-          </div>
+          <span className="text-base font-bold text-foreground leading-tight hidden xl:block">ОфтальмоВики</span>
         </Link>
 
-        <nav className="hidden items-center gap-0.5 lg:flex">
+        <nav className="hidden items-center gap-0 lg:flex">
           {navItems.map((item) => {
             const active = location.pathname === item.to;
             return (
               <Link
                 key={item.to}
                 to={item.to}
-                className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                className="relative px-2.5 py-1.5 text-[13px] xl:text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground whitespace-nowrap"
               >
                 {active && (
                   <motion.span
