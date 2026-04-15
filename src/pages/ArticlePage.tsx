@@ -1,14 +1,51 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { ArrowLeft, Clock, User, BookOpen, List } from "lucide-react";
-import { articles, MEDICAL_SECTION_LABELS, MedicalSections } from "@/data/mockData";
+import { useState, useMemo } from "react";
+import { ArrowLeft, Clock, User, BookOpen, List, Sparkles } from "lucide-react";
+import { articles, MEDICAL_SECTION_LABELS, MedicalSections, type Article } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
+
+/** Score and return top 3–5 related articles by category, subcategory, and keyword overlap. */
+function getRelatedArticles(current: Article, all: Article[], max = 5): Article[] {
+  const keywords = extractKeywords(current.title + " " + current.excerpt);
+
+  const scored = all
+    .filter((a) => a.id !== current.id)
+    .map((a) => {
+      let score = 0;
+      // Same main category
+      if (a.categorySlug === current.categorySlug) score += 3;
+      // Same subcategory
+      if (current.subcategorySlug && a.subcategorySlug === current.subcategorySlug) score += 4;
+      // Manually linked
+      if (current.relatedIds.includes(a.id)) score += 5;
+      // Keyword overlap
+      const otherKw = extractKeywords(a.title + " " + a.excerpt);
+      const overlap = keywords.filter((k) => otherKw.includes(k)).length;
+      score += overlap * 2;
+      return { article: a, score };
+    })
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, max);
+
+  return scored.map((r) => r.article);
+}
+
+function extractKeywords(text: string): string[] {
+  const stopWords = new Set(["и", "в", "на", "с", "по", "для", "от", "к", "из", "при", "это", "как", "что", "или"]);
+  return text
+    .toLowerCase()
+    .replace(/[^а-яёa-z0-9\s-]/g, "")
+    .split(/\s+/)
+    .filter((w) => w.length > 3 && !stopWords.has(w));
+}
 
 const ArticlePage = () => {
   const { slug } = useParams();
   const article = articles.find((a) => a.slug === slug);
   const [simpleMode, setSimpleMode] = useState(false);
+  const related = useMemo(() => (article ? getRelatedArticles(article, articles) : []), [article]);
 
   if (!article) {
     return (
@@ -18,8 +55,6 @@ const ArticlePage = () => {
       </div>
     );
   }
-
-  const related = articles.filter((a) => article.relatedIds.includes(a.id));
 
   // Build TOC from medical sections + legacy sections
   const medicalKeys = article.medicalSections
@@ -144,8 +179,11 @@ const ArticlePage = () => {
       {/* Related articles */}
       {related.length > 0 && (
         <section className="mt-16">
-          <h2 className="mb-6">Связанные статьи</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="mb-6 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-secondary" />
+            <h2 className="mb-0">Связанные статьи</h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((a, i) => (
               <ArticleCard key={a.id} article={a} index={i} />
             ))}
