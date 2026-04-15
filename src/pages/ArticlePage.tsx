@@ -1,8 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { ArrowLeft, Clock, User, BookOpen } from "lucide-react";
-import { articles } from "@/data/mockData";
+import { ArrowLeft, Clock, User, BookOpen, List } from "lucide-react";
+import { articles, MEDICAL_SECTION_LABELS, MedicalSections } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
 
 const ArticlePage = () => {
@@ -20,6 +20,19 @@ const ArticlePage = () => {
   }
 
   const related = articles.filter((a) => article.relatedIds.includes(a.id));
+
+  // Build TOC from medical sections + legacy sections
+  const medicalKeys = article.medicalSections
+    ? (Object.keys(MEDICAL_SECTION_LABELS) as (keyof MedicalSections)[]).filter(
+        (k) => article.medicalSections?.[k]
+      )
+    : [];
+
+  const hasMedical = medicalKeys.length > 0;
+
+  const tocItems = hasMedical
+    ? medicalKeys.map((k) => ({ id: `section-${k}`, label: MEDICAL_SECTION_LABELS[k] }))
+    : article.sections.map((s, i) => ({ id: `section-${i}`, label: s.title }));
 
   return (
     <motion.div
@@ -43,6 +56,7 @@ const ArticlePage = () => {
         <span>{article.date}</span>
       </div>
 
+      {/* Simple / Professional toggle */}
       {article.sections.some((s) => s.simpleContent) && (
         <div className="mb-8 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 card-shadow">
           <BookOpen className="h-5 w-5 shrink-0 text-secondary" />
@@ -62,27 +76,72 @@ const ArticlePage = () => {
         </div>
       )}
 
-      <div className="space-y-8">
-        {article.sections.map((section, i) => (
-          <motion.section
-            key={i}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: i * 0.05 }}
-          >
-            <h2 className="mb-3">{section.title}</h2>
-            <p className="leading-relaxed text-muted-foreground">
-              {simpleMode && section.simpleContent ? section.simpleContent : section.content}
-            </p>
-          </motion.section>
-        ))}
+      {/* Table of contents */}
+      {tocItems.length > 1 && (
+        <nav className="mb-10 rounded-2xl border border-border bg-card p-6 card-shadow">
+          <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+            <List className="h-4 w-4 text-secondary" />
+            Содержание
+          </div>
+          <ol className="space-y-1.5 pl-1">
+            {tocItems.map((item, i) => (
+              <li key={item.id}>
+                <a
+                  href={`#${item.id}`}
+                  className="text-sm text-muted-foreground hover:text-secondary transition-colors duration-200"
+                >
+                  {i + 1}. {item.label}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+
+      {/* Article content */}
+      <div className="space-y-10">
+        {hasMedical
+          ? medicalKeys.map((key, i) => (
+              <motion.section
+                key={key}
+                id={`section-${key}`}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+                className="scroll-mt-24"
+              >
+                <h2 className="mb-3 text-xl font-semibold text-foreground">
+                  {MEDICAL_SECTION_LABELS[key]}
+                </h2>
+                <p className="leading-relaxed text-muted-foreground">
+                  {article.medicalSections![key]}
+                </p>
+              </motion.section>
+            ))
+          : article.sections.map((section, i) => (
+              <motion.section
+                key={i}
+                id={`section-${i}`}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+                className="scroll-mt-24"
+              >
+                <h2 className="mb-3 text-xl font-semibold text-foreground">{section.title}</h2>
+                <p className="leading-relaxed text-muted-foreground">
+                  {simpleMode && section.simpleContent ? section.simpleContent : section.content}
+                </p>
+              </motion.section>
+            ))}
       </div>
 
-      <div className="mt-6 rounded-2xl border border-border bg-accent/50 p-5">
+      {/* Author card */}
+      <div className="mt-10 rounded-2xl border border-border bg-accent/50 p-5">
         <p className="text-sm font-medium text-foreground">{article.author}</p>
         <p className="text-xs text-muted-foreground">{article.authorRole}</p>
       </div>
 
+      {/* Related articles */}
       {related.length > 0 && (
         <section className="mt-16">
           <h2 className="mb-6">Связанные статьи</h2>
