@@ -87,19 +87,24 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    line-height: 1.7;
+    font-size: 1.0625rem; /* 17px base */
+    line-height: 1.75;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4 {
     @apply font-heading font-bold tracking-tight text-foreground;
-    line-height: 1.25;
+    line-height: 1.2;
   }
 
-  h1 { @apply text-2xl sm:text-3xl md:text-4xl; }
-  h2 { @apply text-xl sm:text-2xl; }
-  h3 { @apply text-base sm:text-lg; }
+  h1 { @apply text-3xl sm:text-4xl md:text-5xl; }
+  h2 { @apply text-2xl sm:text-3xl; }
+  h3 { @apply text-lg sm:text-xl; }
+
+  p, li, span, a {
+    font-size: 1rem; /* 16px base minimum */
+  }
 }
 
 @layer utilities {
