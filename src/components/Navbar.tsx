@@ -7,6 +7,7 @@ const navItems = [
   { to: "/", label: "Главная" },
   { to: "/categories", label: "Разделы" },
   { to: "/articles", label: "Статьи" },
+  { to: "/scientific", label: "Научные работы" },
   { to: "/cms", label: "Панель управления" },
 ];
 
