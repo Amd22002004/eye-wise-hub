@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { categories, articles, getCategoryBySlug, getChildCategories } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
 import CategoryGrid from "@/components/CategoryGrid";
+import SEO from "@/components/SEO";
 
 const CategoriesPage = () => {
   const { slug } = useParams();
@@ -11,6 +12,7 @@ const CategoriesPage = () => {
   if (!slug) {
     return (
       <div className="py-8 sm:py-12 md:py-16">
+        <SEO title="Разделы" description="Все разделы энциклопедии офтальмологии — заболевания, диагностика, лечение и профилактика." />
         <h1 className="mb-8 sm:mb-10 text-center">Все разделы</h1>
         <CategoryGrid />
       </div>

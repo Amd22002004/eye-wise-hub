@@ -1,10 +1,27 @@
 import HeroSearch from "@/components/HeroSearch";
 import CategoryGrid from "@/components/CategoryGrid";
 import ArticleCard from "@/components/ArticleCard";
+import SEO from "@/components/SEO";
 import { articles } from "@/data/mockData";
 
 const Index = () => (
   <div>
+    <SEO
+      title="ОфтальмоВики"
+      description="Энциклопедия офтальмологии — достоверная медицинская информация для пациентов, студентов и врачей. Статьи, научные публикации, справочные материалы."
+      jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "ОфтальмоВики",
+        alternateName: "Ассоциация офтальмологических клиник",
+        description: "Энциклопедия офтальмологии для пациентов и специалистов",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: "/?q={search_term_string}",
+          "query-input": "required name=search_term_string",
+        },
+      }}
+    />
     <HeroSearch />
     <CategoryGrid />
     <section className="container page-section">
