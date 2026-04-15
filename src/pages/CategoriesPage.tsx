@@ -10,8 +10,8 @@ const CategoriesPage = () => {
 
   if (!slug) {
     return (
-      <div className="py-10">
-        <h1 className="mb-10 text-center">Все разделы</h1>
+      <div className="py-8 sm:py-12 md:py-16">
+        <h1 className="mb-8 sm:mb-10 text-center">Все разделы</h1>
         <CategoryGrid />
       </div>
     );
@@ -30,16 +30,15 @@ const CategoriesPage = () => {
   const children = getChildCategories(category.id);
   const parent = category.parentId ? categories.find((c) => c.id === category.parentId) : null;
 
-  // Show articles for this category OR its subcategories
   const relevantSlugs = [category.slug, ...children.map((c) => c.slug)];
   const filtered = articles.filter(
     (a) => a.categorySlug === category.slug || a.subcategorySlug === category.slug || relevantSlugs.includes(a.categorySlug) || relevantSlugs.includes(a.subcategorySlug ?? "")
   );
 
   return (
-    <div className="container py-10">
+    <div className="container py-8 sm:py-12 md:py-16">
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground">
+      <nav className="mb-5 sm:mb-6 flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
         <Link to="/categories" className="hover:text-foreground transition-colors">Разделы</Link>
         {parent && (
           <>
@@ -55,12 +54,12 @@ const CategoriesPage = () => {
         <span className="text-2xl">{category.icon}</span>
         <h1 className="mb-0">{category.name}</h1>
       </div>
-      <p className="mb-8 text-muted-foreground">{category.description}</p>
+      <p className="mb-8 sm:mb-10 text-sm sm:text-base text-muted-foreground">{category.description}</p>
 
       {/* Subcategories */}
       {children.length > 0 && (
-        <div className="mb-10">
-          <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">Подразделы</h3>
+        <div className="mb-8 sm:mb-10">
+          <h3 className="mb-3 sm:mb-4 text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wide">Подразделы</h3>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {children.map((child, i) => (
               <motion.div
@@ -91,8 +90,8 @@ const CategoriesPage = () => {
         <p className="text-muted-foreground">Статьи в этой категории скоро появятся.</p>
       ) : (
         <>
-          <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">Статьи</h3>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <h3 className="mb-3 sm:mb-4 text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wide">Статьи</h3>
+          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((a, i) => (
               <ArticleCard key={a.id} article={a} index={i} />
             ))}

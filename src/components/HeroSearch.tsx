@@ -11,9 +11,9 @@ const HeroSearch = () => {
   const results = useMemo(() => {
     if (query.length < 2) return [];
     const q = query.toLowerCase();
-    return articles.filter(
-      (a) => a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q)
-    ).slice(0, 5);
+    return articles
+      .filter((a) => a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q))
+      .slice(0, 5);
   }, [query]);
 
   const handleSelect = (slug: string) => {
@@ -22,12 +22,12 @@ const HeroSearch = () => {
   };
 
   return (
-    <section className="relative flex flex-col items-center px-4 pb-16 pt-20 md:pt-28">
+    <section className="relative flex flex-col items-center px-4 py-16 sm:py-20 md:py-28">
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="mb-4 text-center"
+        className="mb-3 sm:mb-4 text-center"
       >
         Энциклопедия офтальмологии
       </motion.h1>
@@ -35,7 +35,7 @@ const HeroSearch = () => {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-        className="mb-10 max-w-xl text-center text-muted-foreground"
+        className="mb-8 sm:mb-10 max-w-xl text-center text-muted-foreground text-sm sm:text-base"
       >
         Достоверная медицинская информация для пациентов, студентов и врачей
       </motion.p>
@@ -47,13 +47,13 @@ const HeroSearch = () => {
         className="relative w-full max-w-2xl"
       >
         <div className="relative">
-          <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-4 sm:left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Поиск заболеваний, методов лечения, публикаций…"
-            className="h-14 w-full rounded-2xl border border-border bg-card pl-14 pr-5 text-base shadow-sm transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:card-shadow-hover"
+            placeholder="Поиск заболеваний, методов лечения…"
+            className="h-12 sm:h-14 w-full rounded-2xl border border-border bg-card pl-12 sm:pl-14 pr-5 text-sm sm:text-base shadow-sm transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:card-shadow-hover"
           />
         </div>
 
@@ -70,7 +70,7 @@ const HeroSearch = () => {
                 <button
                   key={article.id}
                   onClick={() => handleSelect(article.slug)}
-                  className="flex w-full flex-col gap-0.5 px-5 py-3 text-left transition-colors duration-150 hover:bg-accent"
+                  className="flex w-full flex-col gap-0.5 px-4 sm:px-5 py-3 text-left transition-colors duration-150 hover:bg-accent"
                 >
                   <span className="text-sm font-semibold text-foreground">{article.title}</span>
                   <span className="text-xs text-muted-foreground line-clamp-1">{article.excerpt}</span>

@@ -7,10 +7,10 @@ const Index = () => (
   <div>
     <HeroSearch />
     <CategoryGrid />
-    <section className="container pb-20">
-      <h2 className="mb-8 text-center">Популярные статьи</h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {articles.slice(0, 4).map((a, i) => (
+    <section className="container page-section">
+      <h2 className="mb-6 sm:mb-8 text-center">Популярные статьи</h2>
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {articles.slice(0, 6).map((a, i) => (
           <ArticleCard key={a.id} article={a} index={i} />
         ))}
       </div>
