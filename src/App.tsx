@@ -10,6 +10,7 @@ import ArticlePage from "./pages/ArticlePage";
 import CategoriesPage from "./pages/CategoriesPage";
 import ArticlesListPage from "./pages/ArticlesListPage";
 import CMSPage from "./pages/CMSPage";
+import ScientificPage from "./pages/ScientificPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/categories" element={<CategoriesPage />} />
               <Route path="/categories/:slug" element={<CategoriesPage />} />
               <Route path="/articles" element={<ArticlesListPage />} />
+              <Route path="/scientific" element={<ScientificPage />} />
               <Route path="/cms" element={<CMSPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
