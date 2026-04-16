@@ -61,30 +61,41 @@ export const getCategoryById = (id: string) => categories.find((c) => c.id === i
 export const getCategoryBySlug = (slug: string) => categories.find((c) => c.slug === slug);
 
 export const categories: Category[] = [
-  { id: "0", slug: "general-info", name: "Общая информация", description: "Основы офтальмологии, анатомия глаза, зрительный анализатор", articleCount: 4, icon: "📖" },
+  { id: "0", slug: "general-info", name: "Основы зрения", description: "Основы офтальмологии, анатомия глаза, зрительный анализатор", articleCount: 4, icon: "📖" },
   { id: "1", slug: "diseases", name: "Заболевания глаз", description: "Полная информация о заболеваниях органа зрения", articleCount: 42, icon: "👁️" },
   { id: "2", slug: "diagnostics", name: "Диагностика", description: "Методы обследования и диагностики", articleCount: 18, icon: "🔬" },
   { id: "3", slug: "treatment", name: "Лечение", description: "Современные методы лечения и хирургии", articleCount: 35, icon: "💊" },
   { id: "4", slug: "prevention", name: "Профилактика", description: "Рекомендации по сохранению зрения", articleCount: 15, icon: "🛡️" },
+  { id: "10", slug: "symptoms", name: "Симптомы и жалобы", description: "Описание симптомов и их связь с заболеваниями глаз", articleCount: 5, icon: "🩺" },
   { id: "5", slug: "research", name: "Научные публикации", description: "Исследования и клинические данные", articleCount: 27, icon: "📊" },
   { id: "6", slug: "legal", name: "Нормативные документы", description: "Законы и стандарты в офтальмологии", articleCount: 12, icon: "📜" },
   { id: "7", slug: "dissertations", name: "Диссертации", description: "Кандидатские и докторские диссертации", articleCount: 7, icon: "🎓" },
   { id: "8", slug: "doctors", name: "Врачи-офтальмологи", description: "Ведущие специалисты и их профили", articleCount: 4, icon: "👨‍⚕️" },
   { id: "9", slug: "modern-directions", name: "Современные направления", description: "ИИ, генетика, телемедицина и новые технологии", articleCount: 4, icon: "🚀" },
+  // Подкатегории "Основы зрения"
   { id: "001", slug: "what-is-ophthalmology", name: "Что такое офтальмология", description: "Введение в науку о зрении", articleCount: 1, icon: "📘", parentId: "0" },
   { id: "002", slug: "eye-anatomy", name: "Анатомия и физиология глаза", description: "Строение и функции органа зрения", articleCount: 1, icon: "🧬", parentId: "0" },
   { id: "003", slug: "visual-analyzer", name: "Зрительный анализатор", description: "От сетчатки до зрительной коры", articleCount: 1, icon: "🧠", parentId: "0" },
   { id: "004", slug: "age-vision", name: "Возрастные особенности зрения", description: "Зрение от рождения до старости", articleCount: 1, icon: "👶", parentId: "0" },
+  // Подкатегории "Заболевания глаз"
   { id: "101", slug: "glaucoma-cat", name: "Глаукома", description: "Виды глаукомы, диагностика и лечение", articleCount: 8, icon: "🔵", parentId: "1" },
   { id: "102", slug: "cataract-cat", name: "Катаракта", description: "Помутнение хрусталика и методы лечения", articleCount: 6, icon: "⚪", parentId: "1" },
   { id: "103", slug: "retina", name: "Заболевания сетчатки", description: "Дегенерации, отслойки и дистрофии сетчатки", articleCount: 10, icon: "🟠", parentId: "1" },
   { id: "104", slug: "cornea", name: "Заболевания роговицы", description: "Кератиты, дистрофии и травмы роговицы", articleCount: 7, icon: "🟢", parentId: "1" },
   { id: "105", slug: "refraction", name: "Аномалии рефракции", description: "Миопия, гиперметропия, астигматизм", articleCount: 11, icon: "🔴", parentId: "1" },
+  // Подкатегории "Диагностика"
   { id: "201", slug: "imaging", name: "Визуализация", description: "ОКТ, ангиография, УЗИ глаза", articleCount: 9, icon: "📷", parentId: "2" },
   { id: "202", slug: "functional-tests", name: "Функциональные тесты", description: "Периметрия, тонометрия, рефрактометрия", articleCount: 6, icon: "📐", parentId: "2" },
+  // Подкатегории "Лечение"
   { id: "301", slug: "surgery", name: "Хирургия", description: "Операции на глазах", articleCount: 15, icon: "🔪", parentId: "3" },
   { id: "302", slug: "laser", name: "Лазерное лечение", description: "LASIK, ФРК, лазерная коагуляция", articleCount: 10, icon: "⚡", parentId: "3" },
   { id: "303", slug: "pharmacology", name: "Фармакотерапия", description: "Глазные капли и инъекции", articleCount: 10, icon: "💉", parentId: "3" },
+  // Подкатегории "Симптомы и жалобы"
+  { id: "1001", slug: "eye-pain", name: "Боль в глазах", description: "Причины и виды боли в глазах", articleCount: 1, icon: "😣", parentId: "10" },
+  { id: "1002", slug: "eye-redness", name: "Покраснение глаз", description: "Причины покраснения и конъюнктивита", articleCount: 1, icon: "🔴", parentId: "10" },
+  { id: "1003", slug: "blurred-vision", name: "Размытое зрение", description: "Причины нечёткого зрения", articleCount: 1, icon: "🌫️", parentId: "10" },
+  { id: "1004", slug: "floaters", name: "Мушки перед глазами", description: "Плавающие помутнения в поле зрения", articleCount: 1, icon: "✨", parentId: "10" },
+  { id: "1005", slug: "vision-loss", name: "Снижение зрения", description: "Причины ухудшения зрительных функций", articleCount: 1, icon: "📉", parentId: "10" },
 ];
 
 export const articles: Article[] = [
