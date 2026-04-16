@@ -10,6 +10,7 @@ const DEDICATED_ROUTES: Record<string, string> = {
   "dissertations": "/dissertations",
   "doctors": "/doctors",
   "modern-directions": "/modern-directions",
+  "symptoms": "/symptoms",
 };
 
 const CategoryGrid = () => {

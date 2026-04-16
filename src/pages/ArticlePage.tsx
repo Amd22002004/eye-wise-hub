@@ -1,12 +1,20 @@
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
-import { ArrowLeft, Clock, User, List, Sparkles, Heart, GraduationCap, ShieldCheck, Info, CalendarClock } from "lucide-react";
+import { ArrowLeft, Clock, User, List, Heart, GraduationCap, ShieldCheck, Info, CalendarClock, Sparkles, Stethoscope, Pill, Search, Rocket } from "lucide-react";
 import { articles, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
 import SEO from "@/components/SEO";
 
-function getRelatedArticles(current: Article, all: Article[], max = 5): Article[] {
+// Modern directions data for inline links
+const MODERN_DIRECTION_LINKS = [
+  { keywords: ["ИИ", "искусственн", "алгоритм", "нейронн", "глубокого обучения", "скрининг"], id: "ai", label: "ИИ в офтальмологии" },
+  { keywords: ["генн", "генетич", "CRISPR", "мутац", "наследствен"], id: "genetics", label: "Генетика в офтальмологии" },
+  { keywords: ["телемедицин", "дистанционн", "мобильн", "портативн"], id: "telemedicine", label: "Телемедицина" },
+  { keywords: ["робот", "бионич", "имплант", "sustained-release", "нанотехнолог"], id: "new-tech", label: "Новые технологии" },
+];
+
+function getRelatedArticles(current: Article, all: Article[], max = 6): Article[] {
   const keywords = extractKeywords(current.title + " " + current.excerpt);
   const scored = all
     .filter((a) => a.id !== current.id)
@@ -37,11 +45,44 @@ function extractKeywords(text: string): string[] {
 
 type ViewMode = "simple" | "professional";
 
+interface RelationGroup {
+  type: "disease" | "treatment" | "diagnostics" | "symptoms";
+  label: string;
+  icon: typeof Stethoscope;
+  articles: Article[];
+}
+
+function categorizeRelated(related: Article[]): RelationGroup[] {
+  const groups: RelationGroup[] = [
+    { type: "disease", label: "Похожие заболевания", icon: Stethoscope, articles: [] },
+    { type: "treatment", label: "Методы лечения", icon: Pill, articles: [] },
+    { type: "diagnostics", label: "Диагностика", icon: Search, articles: [] },
+    { type: "symptoms", label: "Симптомы", icon: Info, articles: [] },
+  ];
+  for (const a of related) {
+    if (a.categorySlug === "symptoms") groups[3].articles.push(a);
+    else if (a.categorySlug === "diagnostics") groups[2].articles.push(a);
+    else if (a.categorySlug === "treatment") groups[1].articles.push(a);
+    else groups[0].articles.push(a);
+  }
+  return groups.filter((g) => g.articles.length > 0);
+}
+
+function getRelevantDirections(article: Article): { id: string; label: string }[] {
+  const text = (article.title + " " + article.excerpt + " " +
+    (article.medicalSections ? Object.values(article.medicalSections).map(s => s ? `${s.simple} ${s.professional}` : "").join(" ") : "") +
+    article.sections.map(s => s.content).join(" ")
+  ).toLowerCase();
+  return MODERN_DIRECTION_LINKS.filter(d => d.keywords.some(k => text.includes(k.toLowerCase())));
+}
+
 const ArticlePage = () => {
   const { slug } = useParams();
   const article = articles.find((a) => a.slug === slug);
   const [mode, setMode] = useState<ViewMode>("simple");
   const related = useMemo(() => (article ? getRelatedArticles(article, articles) : []), [article]);
+  const relationGroups = useMemo(() => categorizeRelated(related), [related]);
+  const modernLinks = useMemo(() => (article ? getRelevantDirections(article) : []), [article]);
 
   if (!article) {
     return (
@@ -211,6 +252,29 @@ const ArticlePage = () => {
             ))}
       </div>
 
+      {/* Modern directions links */}
+      {modernLinks.length > 0 && (
+        <div className="mt-8 sm:mt-10 rounded-2xl border border-border bg-gradient-to-br from-card to-accent/30 p-5 sm:p-6 card-shadow">
+          <div className="mb-3 flex items-center gap-2">
+            <Rocket className="h-5 w-5 text-primary" />
+            <h3 className="text-base font-semibold text-foreground">Современные направления</h3>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3">Связанные инновации и технологии:</p>
+          <div className="flex flex-wrap gap-2">
+            {modernLinks.map((d) => (
+              <Link
+                key={d.id}
+                to={`/modern-directions#${d.id}`}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors duration-200"
+              >
+                <Rocket className="h-3 w-3" />
+                {d.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Author card */}
       <div className="mt-10 sm:mt-12 rounded-2xl border border-border bg-accent/50 p-5 sm:p-6">
         <div className="flex items-center gap-3 mb-2">
@@ -225,17 +289,30 @@ const ArticlePage = () => {
         <p className="text-xs text-muted-foreground mt-2">Последнее обновление: {article.date}</p>
       </div>
 
-      {/* Related articles */}
-      {related.length > 0 && (
+      {/* Related materials — categorized */}
+      {relationGroups.length > 0 && (
         <section className="mt-12 sm:mt-16">
           <div className="mb-5 sm:mb-6 flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-secondary" />
-            <h2 className="mb-0">Связанные статьи</h2>
+            <h2 className="mb-0">Связанные материалы</h2>
           </div>
-          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((a, i) => (
-              <ArticleCard key={a.id} article={a} index={i} />
-            ))}
+          <div className="space-y-6">
+            {relationGroups.map((group) => {
+              const Icon = group.icon;
+              return (
+                <div key={group.type}>
+                  <div className="mb-3 flex items-center gap-2">
+                    <Icon className="h-4 w-4 text-muted-foreground" />
+                    <h3 className="text-sm font-semibold text-foreground">{group.label}</h3>
+                  </div>
+                  <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    {group.articles.map((a, i) => (
+                      <ArticleCard key={a.id} article={a} index={i} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
