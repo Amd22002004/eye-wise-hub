@@ -5,13 +5,12 @@ import { useState } from "react";
 
 const navItems = [
   { to: "/", label: "Главная" },
-  { to: "/about", label: "О нас" },
-  { to: "/general-info", label: "Об офтальмологии" },
+  { to: "/general-info", label: "Основы зрения" },
   { to: "/categories", label: "Разделы" },
+  { to: "/symptoms", label: "Симптомы" },
   { to: "/articles", label: "Статьи" },
   { to: "/doctors", label: "Врачи" },
   { to: "/scientific", label: "Публикации" },
-  { to: "/dissertations", label: "Диссертации" },
   { to: "/modern-directions", label: "Направления" },
   { to: "/cms", label: "Админка" },
   { to: "/profile", label: "Кабинет" },
