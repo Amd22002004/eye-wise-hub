@@ -138,7 +138,7 @@ export const articles: Article[] = [
       },
     },
     sections: [],
-    relatedIds: ["2", "3"],
+    relatedIds: ["2", "3", "s1", "s5"],
   },
   {
     id: "2",
