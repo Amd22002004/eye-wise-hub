@@ -19,6 +19,7 @@ const GeneralInfoPage = lazy(() => import("./pages/GeneralInfoPage"));
 const DissertationsPage = lazy(() => import("./pages/DissertationsPage"));
 const DoctorsPage = lazy(() => import("./pages/DoctorsPage"));
 const ModernDirectionsPage = lazy(() => import("./pages/ModernDirectionsPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -53,6 +54,9 @@ const App = () => (
                   <Route path="/doctors" element={<DoctorsPage />} />
                   <Route path="/modern-directions" element={<ModernDirectionsPage />} />
                   <Route path="/cms" element={<CMSPage />} />
+                  <Route path="/admin" element={<CMSPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/account" element={<ProfilePage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

@@ -13,6 +13,8 @@ const navItems = [
   { to: "/scientific", label: "Публикации" },
   { to: "/dissertations", label: "Диссертации" },
   { to: "/modern-directions", label: "Направления" },
+  { to: "/cms", label: "Админка" },
+  { to: "/profile", label: "Кабинет" },
 ];
 
 const Navbar = () => {
