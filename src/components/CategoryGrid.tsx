@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { getRootCategories, getChildCategories } from "@/data/mockData";
+import { getRootCategories, getChildCategories } from "@/data/supabaseContent";
+import { useContent } from "@/hooks/useContent";
 
 // Sections that have dedicated pages instead of generic /categories/:slug
 const DEDICATED_ROUTES: Record<string, string> = {
@@ -14,14 +15,16 @@ const DEDICATED_ROUTES: Record<string, string> = {
 };
 
 const CategoryGrid = () => {
-  const roots = getRootCategories();
+  const { data } = useContent();
+  const categories = data?.categories ?? [];
+  const roots = getRootCategories(categories);
 
   return (
     <section className="container pb-12 sm:pb-16 md:pb-20">
       <h2 className="mb-6 sm:mb-8 text-center">Разделы энциклопедии</h2>
       <div className="space-y-4 sm:space-y-5">
         {roots.map((cat, i) => {
-          const children = getChildCategories(cat.id);
+          const children = getChildCategories(categories, cat.id);
           const href = DEDICATED_ROUTES[cat.slug] || `/categories/${cat.slug}`;
           return (
             <motion.div
