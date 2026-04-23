@@ -218,7 +218,7 @@ const CMSPage = () => {
                   onChange={(e) => { setMainCategory(e.target.value); setSubcategory(""); }}
                   className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
                 >
-                  {roots.map((c) => (
+                  {(dbRootCategories.length ? dbRootCategories : roots).map((c) => (
                     <option key={c.id} value={c.slug}>{c.icon} {c.name}</option>
                   ))}
                 </select>
@@ -229,11 +229,28 @@ const CMSPage = () => {
                   value={subcategory}
                   onChange={(e) => setSubcategory(e.target.value)}
                   className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-                  disabled={subcategories.length === 0}
+                  disabled={(dbSubcategories.length ? dbSubcategories : subcategories).length === 0}
                 >
                   <option value="">— Без подкатегории —</option>
-                  {subcategories.map((c) => (
+                  {(dbSubcategories.length ? dbSubcategories : subcategories).map((c) => (
                     <option key={c.id} value={c.slug}>{c.icon} {c.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-foreground">Автор</label>
+              <div className="relative">
+                <UserRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <select
+                  value={authorId}
+                  onChange={(e) => setAuthorId(e.target.value)}
+                  className="h-12 w-full rounded-xl border border-border bg-background pl-11 pr-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                >
+                  <option value="">— Без автора —</option>
+                  {authors.map((author) => (
+                    <option key={author.id} value={author.id}>{author.name}{author.role ? ` · ${author.role}` : ""}</option>
                   ))}
                 </select>
               </div>
@@ -249,6 +266,38 @@ const CMSPage = () => {
                 <option value="draft">Черновик</option>
                 <option value="published">Опубликовать</option>
               </select>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-8 card-shadow space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/10">
+                <Activity className="h-5 w-5 text-secondary" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">Связанные симптомы</h2>
+                <p className="text-xs text-muted-foreground">Связи сохраняются для подбора диагнозов по симптомам</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {symptoms.map((symptom) => {
+                const active = selectedSymptoms.includes(symptom.id);
+                return (
+                  <button
+                    key={symptom.id}
+                    type="button"
+                    onClick={() => toggleSymptom(symptom.id)}
+                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                      active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    {symptom.name}
+                  </button>
+                );
+              })}
+              {symptoms.length === 0 && <p className="text-sm text-muted-foreground">Симптомы пока не загружены.</p>}
             </div>
           </div>
 
