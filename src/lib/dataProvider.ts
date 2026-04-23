@@ -27,11 +27,12 @@ const getMedicalSections = (item: ArticleRow | Article): MedicalSections => {
   return isMedicalSections(content) ? content : {};
 };
 
-const mapArticle = (item: ArticleRow | Article): Article => ({
+const mapArticle = (item: ArticleRow | Article, categoryLookup = new Map<string, { slug: string; name: string }>()): Article => ({
   ...item,
   excerpt: item.excerpt || "",
-  category: "category" in item ? item.category : "Заболевания глаз",
-  categorySlug: "categorySlug" in item ? item.categorySlug : "diseases",
+  category: "category" in item ? item.category : categoryLookup.get(item.category_id || "")?.name || "Заболевания глаз",
+  categorySlug: "categorySlug" in item ? item.categorySlug : categoryLookup.get(item.category_id || "")?.slug || "diseases",
+  subcategorySlug: "subcategorySlug" in item ? item.subcategorySlug : categoryLookup.get(item.subcategory_id || "")?.slug,
   author: "author" in item ? item.author : "Редакция",
   authorRole: "authorRole" in item ? item.authorRole : "Медицинская редакция",
   date: "date" in item ? item.date : item.updated_at || item.created_at || "",
@@ -64,18 +65,20 @@ const causePriority = (article: Article) => {
 };
 
 export async function getArticles() {
-  const { data, error } = await supabase
-    .from("articles")
-    .select("*")
-    .eq("status", "published");
+  const [{ data, error }, { data: categoryRows }] = await Promise.all([
+    supabase.from("articles").select("*").eq("status", "published"),
+    supabase.from("categories").select("id, slug, name"),
+  ]);
 
   if (error || !data || data.length === 0) {
     console.log("Using mock data fallback");
     return articles;
   }
 
+  const categoryLookup = new Map((categoryRows || []).map((category) => [category.id, { slug: category.slug, name: category.name }]));
+
   console.log("Using Supabase data");
-  return data.map(mapArticle);
+  return data.map((article) => mapArticle(article, categoryLookup));
 }
 
 export async function getCategories() {
