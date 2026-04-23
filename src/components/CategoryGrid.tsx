@@ -5,7 +5,6 @@ import { getRootCategories, getChildCategories } from "@/data/mockData";
 
 // Sections that have dedicated pages instead of generic /categories/:slug
 const DEDICATED_ROUTES: Record<string, string> = {
-  "general-info": "/general-info",
   "research": "/scientific",
   "dissertations": "/dissertations",
   "doctors": "/doctors",
@@ -45,7 +44,7 @@ const CategoryGrid = () => {
                       {children.map((child) => (
                         <Link
                           key={child.id}
-                          to={`/categories/${child.slug}`}
+                          to={`/article/${child.slug}`}
                           onClick={(e) => e.stopPropagation()}
                           className="inline-flex items-center gap-1 rounded-lg bg-accent px-3 sm:px-3.5 py-1.5 sm:py-2 text-sm font-medium text-accent-foreground hover:bg-muted transition-colors duration-200"
                         >
