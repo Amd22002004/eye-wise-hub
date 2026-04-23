@@ -3,26 +3,19 @@ import HeroSearch from "@/components/HeroSearch";
 import CategoryGrid from "@/components/CategoryGrid";
 import ArticleCard from "@/components/ArticleCard";
 import SEO from "@/components/SEO";
-import { getArticles, getCategories } from "@/lib/dataProvider";
-import type { Article, Category } from "@/data/mockData";
+import { getArticles } from "@/lib/dataProvider";
+import type { Article } from "@/data/mockData";
 
 const Index = () => {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
 
   const loadArticles = async () => {
     const data = await getArticles();
     setArticles(data);
   };
 
-  const loadCategories = async () => {
-    const data = await getCategories();
-    setCategories(data);
-  };
-
   useEffect(() => {
     loadArticles();
-    loadCategories();
   }, []);
 
   return (
