@@ -60,9 +60,9 @@ function categorizeRelated(related: Article[]): RelationGroup[] {
     { type: "symptoms", label: "Симптомы", icon: Info, articles: [] },
   ];
   for (const a of related) {
-    if (a.categorySlug === "symptoms") groups[3].articles.push(a);
-    else if (a.categorySlug === "diagnostics") groups[2].articles.push(a);
-    else if (a.categorySlug === "treatment") groups[1].articles.push(a);
+    if (a.seedType === "symptom" || a.categorySlug === "symptoms") groups[3].articles.push(a);
+    else if (a.seedType === "diagnostics" || a.categorySlug === "diagnostics") groups[2].articles.push(a);
+    else if (a.seedType === "treatment" || a.categorySlug === "treatment") groups[1].articles.push(a);
     else groups[0].articles.push(a);
   }
   return groups.filter((g) => g.articles.length > 0);
@@ -235,7 +235,7 @@ const ArticlePage = () => {
                 </motion.section>
               );
             })
-          : article.sections.map((section, i) => (
+            : article.sections.length > 0 ? article.sections.map((section, i) => (
               <motion.section
                 key={i}
                 id={`section-${i}`}
@@ -249,7 +249,25 @@ const ArticlePage = () => {
                   <p>{section.content}</p>
                 </div>
               </motion.section>
-            ))}
+            )) : (
+              <motion.section
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="rounded-2xl border border-border bg-card p-5 sm:p-6 card-shadow"
+              >
+                <h2 className="mb-3 text-lg sm:text-xl font-semibold text-foreground">Структура страницы</h2>
+                <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+                  Эта страница создана из seed: URL, категория и связи уже настроены, а полный текст можно добавить вручную без дублирования контента.
+                </p>
+                {article.contentIntent && (
+                  <div className="rounded-xl bg-accent px-4 py-3">
+                    <p className="text-xs font-semibold uppercase text-muted-foreground">Пользовательский интент</p>
+                    <p className="mt-1 text-sm text-foreground">{article.contentIntent}</p>
+                  </div>
+                )}
+              </motion.section>
+            )}
       </div>
 
       {/* Modern directions links */}
