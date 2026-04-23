@@ -20,6 +20,17 @@ export interface SymptomPageData {
   relatedSymptoms: SymptomItem[];
 }
 
+export interface SymptomDiseaseMapItem {
+  symptomId: string;
+  articleId: string;
+}
+
+export interface SymptomSearchData {
+  symptoms: SymptomItem[];
+  articles: Article[];
+  mappings: SymptomDiseaseMapItem[];
+}
+
 const isMedicalSections = (value: unknown): value is MedicalSections =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -111,6 +122,25 @@ export async function getSymptoms(): Promise<SymptomItem[]> {
     name: symptom.name,
     description: symptom.description || "",
   }));
+}
+
+export async function getSymptomSearchData(): Promise<SymptomSearchData> {
+  const [symptoms, articles, { data: mappingRows, error: mappingError }] = await Promise.all([
+    getSymptoms(),
+    getArticles(),
+    supabase.from("symptom_disease_map").select("symptom_id, article_id"),
+  ]);
+
+  const mappings = mappingError
+    ? []
+    : (mappingRows || [])
+        .filter((row: SymptomDiseaseMapRow) => row.symptom_id && row.article_id)
+        .map((row: SymptomDiseaseMapRow) => ({
+          symptomId: row.symptom_id as string,
+          articleId: row.article_id as string,
+        }));
+
+  return { symptoms, articles, mappings };
 }
 
 export async function getSymptomPageData(slug: string): Promise<SymptomPageData | null> {
