@@ -3,19 +3,25 @@ import HeroSearch from "@/components/HeroSearch";
 import CategoryGrid from "@/components/CategoryGrid";
 import ArticleCard from "@/components/ArticleCard";
 import SEO from "@/components/SEO";
-import { getArticles } from "@/lib/dataProvider";
-import type { Article } from "@/data/mockData";
+import { getArticles, getCategories } from "@/lib/dataProvider";
 
 const Index = () => {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const loadArticles = async () => {
     const data = await getArticles();
     setArticles(data);
   };
 
+  const loadCategories = async () => {
+    const data = await getCategories();
+    setCategories(data);
+  };
+
   useEffect(() => {
     loadArticles();
+    loadCategories();
   }, []);
 
   return (
@@ -37,7 +43,7 @@ const Index = () => {
         }}
       />
       <HeroSearch />
-      <CategoryGrid articles={articles} />
+      <CategoryGrid />
       <section className="container page-section">
         <h2 className="mb-6 sm:mb-8 text-center">Популярные статьи</h2>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
