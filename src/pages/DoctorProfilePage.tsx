@@ -2,12 +2,14 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, User, GraduationCap, Award, BookOpen, Briefcase, FileText } from "lucide-react";
 import { doctors } from "@/data/doctorsData";
-import { articles } from "@/data/mockData";
 import SEO from "@/components/SEO";
+import { useContent } from "@/hooks/useContent";
 
 const DoctorProfilePage = () => {
   const { slug } = useParams();
   const doctor = doctors.find((d) => d.slug === slug);
+  const { data } = useContent();
+  const articles = data?.articles ?? [];
 
   if (!doctor) {
     return (

@@ -2,9 +2,10 @@ import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
 import { ArrowLeft, Clock, User, List, Heart, GraduationCap, ShieldCheck, Info, CalendarClock, Sparkles, Stethoscope, Pill, Search, Rocket } from "lucide-react";
-import { articles, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/data/mockData";
+import { MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/data/supabaseContent";
 import ArticleCard from "@/components/ArticleCard";
 import SEO from "@/components/SEO";
+import { useContent } from "@/hooks/useContent";
 
 // Modern directions data for inline links
 const MODERN_DIRECTION_LINKS = [
@@ -78,11 +79,17 @@ function getRelevantDirections(article: Article): { id: string; label: string }[
 
 const ArticlePage = () => {
   const { slug } = useParams();
+  const { data, isLoading } = useContent();
+  const articles = data?.articles ?? [];
   const article = articles.find((a) => a.slug === slug);
   const [mode, setMode] = useState<ViewMode>("simple");
   const related = useMemo(() => (article ? getRelatedArticles(article, articles) : []), [article]);
   const relationGroups = useMemo(() => categorizeRelated(related), [related]);
   const modernLinks = useMemo(() => (article ? getRelevantDirections(article) : []), [article]);
+
+  if (isLoading) {
+    return <div className="container py-20 text-center text-muted-foreground">Загрузка статьи…</div>;
+  }
 
   if (!article) {
     return (
