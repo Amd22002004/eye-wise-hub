@@ -75,6 +75,15 @@ const getExistingArticleSlugs = async () => {
 };
 
 export const runArticleSeeds = async () => {
+  const { error } = await supabase.functions.invoke("seed-articles");
+
+  if (!error) {
+    console.log("Article seeds invoked through backend function");
+    return;
+  }
+
+  console.error("Backend seed function failed, trying client fallback", error);
+
   const hasArticlesTable = await canAccessArticlesTable();
   if (!hasArticlesTable) return;
 
