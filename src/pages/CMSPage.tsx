@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Edit, Eye, FileText, Stethoscope, FolderTree } from "lucide-react";
-import { articles, categories, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type DualContent, getRootCategories, getChildCategories } from "@/data/mockData";
+import { MEDICAL_SECTION_LABELS, type MedicalSectionKey, type DualContent, getRootCategories, getChildCategories } from "@/data/supabaseContent";
+import { useContent } from "@/hooks/useContent";
 
 type Tab = "articles" | "new" | "categories";
 
@@ -17,10 +18,13 @@ const EMPTY_DUAL: DualFields = {
 };
 
 const CMSPage = () => {
+  const { data } = useContent(true);
+  const articles = data?.articles ?? [];
+  const categories = data?.categories ?? [];
   const [tab, setTab] = useState<Tab>("articles");
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
-  const [mainCategory, setMainCategory] = useState(getRootCategories()[0]?.slug ?? "");
+  const [mainCategory, setMainCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [medical, setMedical] = useState<DualFields>({ ...EMPTY_DUAL });
@@ -31,9 +35,9 @@ const CMSPage = () => {
   const [newCatParent, setNewCatParent] = useState("");
   const [newCatIcon, setNewCatIcon] = useState("📁");
 
-  const roots = getRootCategories();
+  const roots = getRootCategories(categories);
   const selectedRoot = categories.find((c) => c.slug === mainCategory);
-  const subcategories = selectedRoot ? getChildCategories(selectedRoot.id) : [];
+  const subcategories = selectedRoot ? getChildCategories(categories, selectedRoot.id) : [];
 
   const updateMedical = (key: MedicalSectionKey, layer: "simple" | "professional", value: string) => {
     setMedical((prev) => ({ ...prev, [key]: { ...prev[key], [layer]: value } }));
