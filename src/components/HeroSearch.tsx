@@ -2,17 +2,15 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
-import { getArticles, getSymptoms, type SymptomItem } from "@/lib/dataProvider";
+import { getSymptoms, type SymptomItem } from "@/lib/dataProvider";
 
 const HeroSearch = () => {
   const [query, setQuery] = useState("");
-  const [articles, setArticles] = useState([]);
   const [symptoms, setSymptoms] = useState<SymptomItem[]>([]);
   const navigate = useNavigate();
 
   const loadArticles = async () => {
-    const [articleData, symptomData] = await Promise.all([getArticles(), getSymptoms()]);
-    setArticles(articleData);
+    const symptomData = await getSymptoms();
     setSymptoms(symptomData);
   };
 
