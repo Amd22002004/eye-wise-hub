@@ -19,8 +19,10 @@ type MedicalSections = {
 
 type ArticleSeedPayload = Pick<
   TablesInsert<"articles">,
-  "slug" | "title" | "excerpt" | "read_time" | "status" | "content_json"
+  "slug" | "title" | "excerpt" | "read_time" | "status" | "content_json" | "category_id" | "subcategory_id"
 >;
+
+type CategoryRef = { id: string; slug: string; parent_id: string | null };
 
 const isMedicalSection = (section: unknown): section is MedicalSection => {
   if (!section || typeof section !== "object") return false;
@@ -50,15 +52,61 @@ const getReadTimeMinutes = (readTime: string) => {
   return Number.isNaN(minutes) ? null : minutes;
 };
 
+const getCategoryRefs = async () => {
+  const { data, error } = await supabase.from("categories").select("id, slug, parent_id");
+
+  if (error || !data) {
+    console.error("Seed aborted: categories are unavailable", error);
+    return null;
+  }
+
+  return new Map(data.map((category: CategoryRef) => [category.slug, category]));
+};
+
+const getExistingArticleSlugs = async () => {
+  const { data, error } = await supabase.from("articles").select("slug");
+
+  if (error || !data) {
+    console.error("Seed aborted: existing articles are unavailable", error);
+    return null;
+  }
+
+  return new Set(data.map((article) => article.slug));
+};
+
 export const runArticleSeeds = async () => {
+  const { error } = await supabase.functions.invoke("seed-articles");
+
+  if (!error) {
+    console.log("Article seeds invoked through backend function");
+    return;
+  }
+
+  console.error("Backend seed function failed, trying client fallback", error);
+
   const hasArticlesTable = await canAccessArticlesTable();
   if (!hasArticlesTable) return;
 
+  const [categoryRefs, existingSlugs] = await Promise.all([getCategoryRefs(), getExistingArticleSlugs()]);
+  if (!categoryRefs || !existingSlugs) return;
+
   for (const seed of articleSeeds) {
+    if (existingSlugs.has(seed.slug)) {
+      console.log(`Seed skipped, already exists: ${seed.slug}`);
+      continue;
+    }
+
     const article = generateArticle(seed);
+    const category = categoryRefs.get(seed.categorySlug);
+    const subcategory = categoryRefs.get(seed.subcategorySlug);
 
     if (!isValidMedicalSections(article.medicalSections)) {
       console.error(`Seed skipped, invalid medical sections for slug: ${article.slug}`);
+      continue;
+    }
+
+    if (!category || !subcategory) {
+      console.error(`Seed skipped, category not found for slug: ${article.slug}`);
       continue;
     }
 
@@ -69,17 +117,20 @@ export const runArticleSeeds = async () => {
       read_time: getReadTimeMinutes(article.readTime),
       status: "published",
       content_json: article.medicalSections as unknown as Json,
+      category_id: category.id,
+      subcategory_id: subcategory.id,
     };
 
-    const { error: upsertError } = await supabase
+    const { error: insertError } = await supabase
       .from("articles")
-      .upsert(payload, { onConflict: "slug" });
+      .insert(payload);
 
-    if (upsertError) {
-      console.error(`Seed upsert failed for slug: ${article.slug}`, upsertError);
+    if (insertError) {
+      console.error(`Seed insert failed for slug: ${article.slug}`, insertError);
       continue;
     }
 
+    existingSlugs.add(seed.slug);
     console.log(`Seed upserted: ${article.slug}`);
   }
 };
