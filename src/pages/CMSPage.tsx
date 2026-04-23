@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Edit, Eye, FileText, Stethoscope, FolderTree } from "lucide-react";
+import { Plus, Edit, Eye, FileText, Stethoscope, FolderTree, UserRound, Activity } from "lucide-react";
 import { categories, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type DualContent, getRootCategories, getChildCategories } from "@/data/mockData";
 import { getArticles } from "@/lib/dataProvider";
+import { supabase } from "@/integrations/supabase/client";
 
 type Tab = "articles" | "new" | "categories";
 
 type DualFields = Record<MedicalSectionKey, DualContent>;
+type CMSCategory = { id: string; slug: string; name: string; parent_id: string | null; icon: string | null };
+type CMSSymptom = { id: string; name: string; slug: string };
+type CMSAuthor = { id: string; name: string; role: string | null };
 
 const EMPTY_DUAL: DualFields = {
   definition: { simple: "", professional: "" },
@@ -26,6 +30,12 @@ const CMSPage = () => {
   const [subcategory, setSubcategory] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [medical, setMedical] = useState<DualFields>({ ...EMPTY_DUAL });
+  const [cmsCategories, setCmsCategories] = useState<CMSCategory[]>([]);
+  const [symptoms, setSymptoms] = useState<CMSSymptom[]>([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [authors, setAuthors] = useState<CMSAuthor[]>([]);
+  const [authorId, setAuthorId] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // Category management state
   const [newCatName, setNewCatName] = useState("");
@@ -36,6 +46,9 @@ const CMSPage = () => {
   const roots = getRootCategories();
   const selectedRoot = categories.find((c) => c.slug === mainCategory);
   const subcategories = selectedRoot ? getChildCategories(selectedRoot.id) : [];
+  const dbRootCategories = cmsCategories.filter((category) => category.parent_id === null);
+  const selectedDbRoot = cmsCategories.find((category) => category.slug === mainCategory);
+  const dbSubcategories = selectedDbRoot ? cmsCategories.filter((category) => category.parent_id === selectedDbRoot.id) : [];
 
   const loadArticles = async () => {
     const data = await getArticles();
@@ -44,18 +57,62 @@ const CMSPage = () => {
 
   useEffect(() => {
     loadArticles();
+    const loadCMSData = async () => {
+      const [{ data: categoryRows }, { data: symptomRows }, { data: authorRows }] = await Promise.all([
+        supabase.from("categories").select("id, slug, name, parent_id, icon").order("name"),
+        supabase.from("symptoms").select("id, name, slug").order("name"),
+        supabase.from("authors").select("id, name, role").order("name"),
+      ]);
+
+      setCmsCategories(categoryRows || []);
+      setSymptoms(symptomRows || []);
+      setAuthors(authorRows || []);
+      if (categoryRows?.length) {
+        const firstRoot = categoryRows.find((category) => category.parent_id === null);
+        if (firstRoot) setMainCategory(firstRoot.slug);
+      }
+    };
+    loadCMSData();
   }, []);
 
   const updateMedical = (key: MedicalSectionKey, layer: "simple" | "professional", value: string) => {
     setMedical((prev) => ({ ...prev, [key]: { ...prev[key], [layer]: value } }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const toggleSymptom = (id: string) => {
+    setSelectedSymptoms((prev) => prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true);
+
+    const { error } = await supabase.functions.invoke("save-medical-article", {
+      body: {
+        title,
+        excerpt,
+        categorySlug: mainCategory,
+        subcategorySlug: subcategory || null,
+        status,
+        authorId: authorId || null,
+        symptomIds: selectedSymptoms,
+        medicalSections: medical,
+      },
+    });
+
+    setIsSaving(false);
+    if (error) {
+      alert("Не удалось сохранить статью. Проверьте поля и повторите попытку.");
+      return;
+    }
+
     alert(`Статья «${title}» сохранена как ${status === "draft" ? "черновик" : "опубликованная"}`);
     setTitle("");
     setExcerpt("");
+    setAuthorId("");
+    setSelectedSymptoms([]);
     setMedical({ ...EMPTY_DUAL });
+    await loadArticles();
     setTab("articles");
   };
 
