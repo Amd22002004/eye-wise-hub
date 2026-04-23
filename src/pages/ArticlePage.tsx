@@ -7,6 +7,7 @@ import ArticleCard from "@/components/ArticleCard";
 import SEO from "@/components/SEO";
 import { getArticles } from "@/lib/dataProvider";
 import { getSeoIntentPath, isSeoIntentSlug, seoIntentBySlug, seoIntentSlugs, seoSectionByIntentSlug, type SeoIntentSlug } from "@/seo/seoTypes";
+import { getContextualLinkRules, getNextStepLinks, getRelatedDiseases, getSameConditionLinks, getSymptomDiseaseLinks, type ContextualLinkRule, type InternalLinkItem } from "@/seo/internalLinks";
 
 // Modern directions data for inline links
 const MODERN_DIRECTION_LINKS = [
@@ -95,6 +96,48 @@ function getRelevantDirections(article: Article): { id: string; label: string }[
   ).toLowerCase();
   return MODERN_DIRECTION_LINKS.filter(d => d.keywords.some(k => text.includes(k.toLowerCase())));
 }
+
+const renderContextualText = (text: string, rules: ContextualLinkRule[]) => {
+  const parts: (string | { phrase: string; to: string })[] = [text];
+  let inserted = 0;
+
+  for (const rule of rules) {
+    if (inserted >= 3) break;
+    const index = parts.findIndex((part) => typeof part === "string" && part.toLowerCase().includes(rule.phrase.toLowerCase()));
+    if (index === -1) continue;
+
+    const value = parts[index] as string;
+    const phraseIndex = value.toLowerCase().indexOf(rule.phrase.toLowerCase());
+    parts.splice(
+      index,
+      1,
+      value.slice(0, phraseIndex),
+      { phrase: value.slice(phraseIndex, phraseIndex + rule.phrase.length), to: rule.to },
+      value.slice(phraseIndex + rule.phrase.length)
+    );
+    inserted += 1;
+  }
+
+  return parts.filter(Boolean).map((part, index) =>
+    typeof part === "string" ? (
+      part
+    ) : (
+      <Link key={`${part.to}-${index}`} to={part.to} className="text-primary underline underline-offset-4 hover:text-secondary transition-colors duration-200">
+        {part.phrase}
+      </Link>
+    )
+  );
+};
+
+const InlineLinkList = ({ items }: { items: InternalLinkItem[] }) => (
+  <div className="mt-4 flex flex-wrap gap-2">
+    {items.map((item) => (
+      <Link key={`${item.to}-${item.label}`} to={item.to} className="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-accent-foreground hover:bg-primary hover:text-primary-foreground transition-colors duration-200">
+        {item.label}
+      </Link>
+    ))}
+  </div>
+);
 
 const ArticlePage = () => {
   const { slug, intent } = useParams();
