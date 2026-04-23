@@ -7,10 +7,11 @@ import ArticleCard from "@/components/ArticleCard";
 import CategoryGrid from "@/components/CategoryGrid";
 import SEO from "@/components/SEO";
 import { getArticles } from "@/lib/dataProvider";
+import type { Article } from "@/data/mockData";
 
 const CategoriesPage = () => {
   const { slug } = useParams();
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState<Article[]>([]);
 
   const loadArticles = async () => {
     const data = await getArticles();
@@ -26,7 +27,7 @@ const CategoriesPage = () => {
       <div className="py-8 sm:py-12 md:py-16">
         <SEO title="Разделы" description="Все разделы энциклопедии офтальмологии — заболевания, диагностика, лечение и профилактика." />
         <h1 className="mb-8 sm:mb-10 text-center">Все разделы</h1>
-        <CategoryGrid />
+        <CategoryGrid articles={articles} />
       </div>
     );
   }
@@ -44,10 +45,13 @@ const CategoriesPage = () => {
   const children = getChildCategories(category.id);
   const parent = category.parentId ? categories.find((c) => c.id === category.parentId) : null;
 
-  const relevantSlugs = [category.slug, ...children.map((c) => c.slug)];
-  const filtered = articles.filter(
-    (a) => a.categorySlug === category.slug || a.subcategorySlug === category.slug || relevantSlugs.includes(a.categorySlug) || relevantSlugs.includes(a.subcategorySlug ?? "")
-  );
+  const filteredArticles = parent
+    ? articles.filter((a) => a.subcategorySlug === slug)
+    : articles.filter((a) => a.categorySlug === category.slug || children.some((child) => child.slug === a.subcategorySlug));
+
+  console.log("subcategory slug:", slug);
+  console.log("articles:", articles);
+  console.log("filtered:", filteredArticles);
 
   return (
     <div className="container py-8 sm:py-12 md:py-16">
@@ -91,7 +95,9 @@ const CategoriesPage = () => {
                     <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{child.name}</span>
                     <p className="text-xs text-muted-foreground truncate">{child.description}</p>
                   </div>
-                  <span className="text-xs text-secondary font-medium">{child.articleCount}</span>
+                    <span className="text-xs text-secondary font-medium">
+                      {articles.filter((a) => a.subcategorySlug === child.slug).length}
+                    </span>
                 </Link>
               </motion.div>
             ))}
@@ -100,13 +106,13 @@ const CategoriesPage = () => {
       )}
 
       {/* Articles */}
-      {filtered.length === 0 ? (
-        <p className="text-muted-foreground">Статьи в этой категории скоро появятся.</p>
+      {filteredArticles.length === 0 ? (
+        <p className="text-muted-foreground">В этом разделе пока нет статей</p>
       ) : (
         <>
           <h3 className="mb-3 sm:mb-4 text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wide">Статьи</h3>
           <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((a, i) => (
+            {filteredArticles.map((a, i) => (
               <ArticleCard key={a.id} article={a} index={i} />
             ))}
           </div>
