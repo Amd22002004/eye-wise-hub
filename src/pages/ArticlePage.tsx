@@ -255,7 +255,7 @@ const ArticlePage = () => {
                 </motion.section>
               );
             })
-            : article.sections.length > 0 ? article.sections.map((section, i) => (
+            : (article.sections || []).length > 0 ? (article.sections || []).map((section, i) => (
               <motion.section
                 key={i}
                 id={`section-${i}`}
