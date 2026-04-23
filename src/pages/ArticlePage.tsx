@@ -97,10 +97,12 @@ function getRelevantDirections(article: Article): { id: string; label: string }[
 }
 
 const ArticlePage = () => {
-  const { slug } = useParams();
+  const { slug, intent } = useParams();
   const [articles, setArticles] = useState<Article[]>([]);
   const [mode, setMode] = useState<ViewMode>("simple");
   const article = articles.length > 0 ? articles.find((a) => a.slug === slug) : undefined;
+  const activeIntent = isSeoIntentSlug(intent) ? intent : "overview";
+  const activeSection = seoSectionByIntentSlug[activeIntent];
   const related = useMemo(() => (article ? getRelatedArticles(article, articles) : []), [article, articles]);
   const relationGroups = useMemo(() => categorizeRelated(related), [related]);
   const modernLinks = useMemo(() => (article ? getRelevantDirections(article) : []), [article]);
@@ -136,11 +138,21 @@ const ArticlePage = () => {
       )
     : [];
 
+  const orderedMedicalKeys =
+    activeIntent !== "overview" && medicalKeys.includes(activeSection)
+      ? [activeSection, ...medicalKeys.filter((key) => key !== activeSection)]
+      : medicalKeys;
+
   const hasMedical = medicalKeys.length > 0;
   const hasDualContent = hasMedical;
+  const seoTitle = SEO_INTENT_TITLES[activeIntent](article.title);
+  const seoDescription = SEO_INTENT_DESCRIPTIONS[activeIntent](article.title);
+  const availableSeoLinks = seoIntentSlugs.filter((intentSlug) =>
+    intentSlug === "overview" ? true : medicalKeys.includes(seoSectionByIntentSlug[intentSlug])
+  );
 
   const tocItems = hasMedical
-    ? medicalKeys.map((k) => ({ id: `section-${k}`, label: MEDICAL_SECTION_LABELS[k] }))
+    ? orderedMedicalKeys.map((k) => ({ id: `section-${k}`, label: MEDICAL_SECTION_LABELS[k] }))
     : (article.sections || []).map((s, i) => ({ id: `section-${i}`, label: s.title }));
 
   return (
