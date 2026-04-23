@@ -33,6 +33,8 @@ export interface Article {
     simpleContent?: string;
   }[];
   relatedIds: string[];
+  seedType?: "symptom" | "disease" | "diagnostics" | "treatment";
+  contentIntent?: string;
 }
 
 export interface Category {
@@ -44,6 +46,8 @@ export interface Category {
   icon: string;
   parentId?: string;
 }
+
+import { seedArticles, seedCategories } from "./contentSeeds";
 
 export const MEDICAL_SECTION_LABELS: Record<MedicalSectionKey, string> = {
   definition: "Что это",
@@ -96,9 +100,11 @@ export const categories: Category[] = [
   { id: "1003", slug: "blurred-vision", name: "Размытое зрение", description: "Причины нечёткого зрения", articleCount: 1, icon: "🌫️", parentId: "10" },
   { id: "1004", slug: "floaters", name: "Мушки перед глазами", description: "Плавающие помутнения в поле зрения", articleCount: 1, icon: "✨", parentId: "10" },
   { id: "1005", slug: "vision-loss", name: "Снижение зрения", description: "Причины ухудшения зрительных функций", articleCount: 1, icon: "📉", parentId: "10" },
+  ...seedCategories,
 ];
 
 export const articles: Article[] = [
+  ...seedArticles,
   {
     id: "1",
     slug: "glaucoma",
