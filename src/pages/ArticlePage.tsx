@@ -189,7 +189,8 @@ const ArticlePage = () => {
   const hasMedical = medicalKeys.length > 0;
   const hasDualContent = hasMedical;
   const seoTitle = SEO_INTENT_TITLES[activeIntent](article.title);
-  const seoDescription = SEO_INTENT_DESCRIPTIONS[activeIntent](article.title);
+  const seoDescription = activeIntent === "overview" ? article.excerpt : SEO_INTENT_DESCRIPTIONS[activeIntent](article.title);
+  const canonical = `https://www.vysotsky.pro${getSeoIntentPath(article.slug, activeIntent)}`;
   const availableSeoLinks = seoIntentSlugs.filter((intentSlug) =>
     intentSlug === "overview" ? true : medicalKeys.includes(seoSectionByIntentSlug[intentSlug])
   );
@@ -210,6 +211,7 @@ const ArticlePage = () => {
       <SEO
         title={seoTitle}
         description={seoDescription}
+        canonical={canonical}
         type="article"
         jsonLd={{
           "@context": "https://schema.org",

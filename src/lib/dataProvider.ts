@@ -5,6 +5,7 @@ import type { Database } from "@/integrations/supabase/types";
 type ArticleRow = Database["public"]["Tables"]["articles"]["Row"];
 type SymptomRow = Database["public"]["Tables"]["symptoms"]["Row"];
 type SymptomDiseaseMapRow = Database["public"]["Tables"]["symptom_disease_map"]["Row"];
+type CategoryRow = Database["public"]["Tables"]["categories"]["Row"];
 
 export interface SymptomItem {
   id: string;
@@ -27,11 +28,16 @@ const getMedicalSections = (item: ArticleRow | Article): MedicalSections => {
   return isMedicalSections(content) ? content : {};
 };
 
-const mapArticle = (item: ArticleRow | Article): Article => ({
+const mapArticle = (item: ArticleRow | Article, categoryById = new Map<string, CategoryRow>()): Article => {
+  const category = "category" in item ? undefined : item.category_id ? categoryById.get(item.category_id) : undefined;
+  const subcategory = "category" in item ? undefined : item.subcategory_id ? categoryById.get(item.subcategory_id) : undefined;
+
+  return ({
   ...item,
   excerpt: item.excerpt || "",
-  category: "category" in item ? item.category : "Заболевания глаз",
-  categorySlug: "categorySlug" in item ? item.categorySlug : "diseases",
+  category: "category" in item ? item.category : category?.name || "Энциклопедия",
+  categorySlug: "categorySlug" in item ? item.categorySlug : category?.slug || "articles",
+  subcategorySlug: "subcategorySlug" in item ? item.subcategorySlug : subcategory?.slug,
   author: "author" in item ? item.author : "Редакция",
   authorRole: "authorRole" in item ? item.authorRole : "Медицинская редакция",
   date: "date" in item ? item.date : item.updated_at || item.created_at || "",
@@ -40,6 +46,7 @@ const mapArticle = (item: ArticleRow | Article): Article => ({
   sections: "sections" in item ? item.sections : [],
   relatedIds: "relatedIds" in item ? item.relatedIds : [],
 });
+};
 
 const normalizeSymptomSlug = (article: Article) => article.subcategorySlug || article.slug.replace(/-symptom$/, "");
 
@@ -64,10 +71,10 @@ const causePriority = (article: Article) => {
 };
 
 export async function getArticles() {
-  const { data, error } = await supabase
-    .from("articles")
-    .select("*")
-    .eq("status", "published");
+  const [{ data, error }, { data: categoryRows }] = await Promise.all([
+    supabase.from("articles").select("*").eq("status", "published"),
+    supabase.from("categories").select("*"),
+  ]);
 
   if (error || !data || data.length === 0) {
     console.log("Using mock data fallback");
@@ -75,7 +82,8 @@ export async function getArticles() {
   }
 
   console.log("Using Supabase data");
-  return data.map(mapArticle);
+  const categoryById = new Map((categoryRows || []).map((category: CategoryRow) => [category.id, category]));
+  return data.map((article) => mapArticle(article, categoryById));
 }
 
 export async function getCategories() {
