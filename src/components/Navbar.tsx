@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const navItems = [
   { to: "/", label: "Главная" },
-  { to: "/categories/general-info", label: "Основы зрения" },
+  { to: "/general-info", label: "Основы зрения" },
   { to: "/categories", label: "Разделы" },
   { to: "/symptoms", label: "Симптомы" },
   { to: "/articles", label: "Статьи" },
