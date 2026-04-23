@@ -6,7 +6,7 @@ import { MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/
 import ArticleCard from "@/components/ArticleCard";
 import SEO from "@/components/SEO";
 import { getArticles } from "@/lib/dataProvider";
-import { getSeoIntentPath, isSeoIntentSlug, seoIntentBySlug, seoIntentSlugs, seoSectionByIntentSlug, type SeoIntentSlug } from "@/seo/seoTypes";
+import { getSeoIntentPath, isSeoIntentSlug, seoIntentSlugs, seoSectionByIntentSlug, type SeoIntentSlug } from "@/seo/seoTypes";
 import { getContextualLinkRules, getNextStepLinks, getRelatedDiseases, getSameConditionLinks, getSymptomDiseaseLinks, type ContextualLinkRule, type InternalLinkItem } from "@/seo/internalLinks";
 
 // Modern directions data for inline links
@@ -193,6 +193,8 @@ const ArticlePage = () => {
   const availableSeoLinks = seoIntentSlugs.filter((intentSlug) =>
     intentSlug === "overview" ? true : medicalKeys.includes(seoSectionByIntentSlug[intentSlug])
   );
+  const sameConditionLinks = getSameConditionLinks(article, medicalKeys, activeSection);
+  const relatedDiseases = getRelatedDiseases(article, articles);
 
   const tocItems = hasMedical
     ? orderedMedicalKeys.map((k) => ({ id: `section-${k}`, label: MEDICAL_SECTION_LABELS[k] }))
