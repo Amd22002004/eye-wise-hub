@@ -34,7 +34,7 @@ export const runArticleSeeds = async () => {
       read_time: getReadTimeMinutes(article.readTime),
       status: "published",
       content_json: article.medicalSections || {},
-    });
+    } as any);
 
     if (insertError) {
       console.error(`Seed insert failed for slug: ${article.slug}`, insertError);
