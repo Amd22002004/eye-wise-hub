@@ -246,7 +246,7 @@ const CMSPage = () => {
             <h2 className="text-lg font-semibold text-foreground mb-4">Структура категорий</h2>
             <div className="space-y-3">
               {roots.map((root) => {
-                const children = getChildCategories(root.id);
+                const children = getChildCategories(categories, root.id);
                 return (
                   <div key={root.id}>
                     <div className="flex items-center gap-3 rounded-xl bg-accent/50 p-3">
