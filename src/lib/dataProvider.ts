@@ -22,6 +22,8 @@ export interface SymptomPageData {
 const isMedicalSections = (value: unknown): value is MedicalSections =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
+const isArticleRow = (item: ArticleRow | Article): item is ArticleRow => "subcategory_id" in item;
+
 const getMedicalSections = (item: ArticleRow | Article): MedicalSections => {
   const content = "content_json" in item ? item.content_json : item.medicalSections;
   return isMedicalSections(content) ? content : {};
@@ -32,7 +34,7 @@ const mapArticle = (item: ArticleRow | Article, categoryLookup = new Map<string,
   excerpt: item.excerpt || "",
   category: "category" in item ? item.category : categoryLookup.get(item.category_id || "")?.name || "Заболевания глаз",
   categorySlug: "categorySlug" in item ? item.categorySlug : categoryLookup.get(item.category_id || "")?.slug || "diseases",
-  subcategorySlug: "subcategorySlug" in item ? item.subcategorySlug : categoryLookup.get(item.subcategory_id || "")?.slug,
+  subcategorySlug: "subcategorySlug" in item ? item.subcategorySlug : isArticleRow(item) ? categoryLookup.get(item.subcategory_id || "")?.slug : undefined,
   author: "author" in item ? item.author : "Редакция",
   authorRole: "authorRole" in item ? item.authorRole : "Медицинская редакция",
   date: "date" in item ? item.date : item.updated_at || item.created_at || "",
