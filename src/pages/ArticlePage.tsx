@@ -93,7 +93,7 @@ const ArticlePage = () => {
 
   const loadArticles = async () => {
     const data = await getArticles();
-    setArticles(data);
+    setArticles(data as Article[]);
   };
 
   useEffect(() => {
