@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { AlertCircle, Check, Stethoscope } from "lucide-react";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { getSymptomSearchData, type SymptomSearchData } from "@/lib/dataProvider";
 
@@ -46,27 +47,68 @@ const SymptomsPage = () => {
   const likelyResults = rankedArticles.filter((item) => item.matchCount >= Math.max(2, selectedSymptoms.length));
   const lessCommonResults = rankedArticles.filter((item) => !likelyResults.includes(item));
   const hasSelection = selectedSymptoms.length > 0;
+  const symptomArticles = searchData.articles.filter((article) => article.categorySlug === "symptoms");
 
   return (
     <div className="container max-w-5xl py-8 sm:py-12 md:py-16">
       <SEO
-        title="Поиск по симптомам — офтальмология"
-        description="Выберите симптомы со стороны глаз и получите список возможных заболеваний с переходом к подробным статьям."
+        title="Симптомы и жалобы — офтальмология"
+        description="Описание симптомов заболеваний глаз: боль, покраснение, размытое зрение, мушки, снижение зрения. Связь симптомов с заболеваниями."
       />
       <div className="mb-8 sm:mb-12">
-        <h1 className="mb-3">Поиск по симптомам</h1>
+        <h1 className="mb-3">Симптомы и жалобы</h1>
         <p className="text-lg text-muted-foreground">
-          Выберите один или несколько симптомов, чтобы увидеть связанные заболевания и перейти к подробному материалу
+          Узнайте, о чём могут говорить различные симптомы со стороны глаз, и когда нужно обратиться к врачу
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 card-shadow">
+      <Tabs defaultValue="articles" className="space-y-6">
+        <TabsList className="grid w-full max-w-xl grid-cols-2">
+          <TabsTrigger value="articles">Симптомы и статьи</TabsTrigger>
+          <TabsTrigger value="search">Подбор по симптомам</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="articles" className="mt-0">
+          <div className="space-y-4 sm:space-y-5">
+            {symptomArticles.map((article, i) => (
+              <motion.div
+                key={article.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.06 }}
+              >
+                <Link
+                  to={`/article/${article.slug}`}
+                  className="group flex items-start gap-4 rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 card-shadow hover:card-shadow-hover"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive/10">
+                    <AlertCircle className="h-5 w-5 text-destructive" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
+                      {article.title}
+                    </h2>
+                    <p className="mt-1.5 text-base text-muted-foreground line-clamp-2">{article.excerpt}</p>
+                    <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+                      <span>{article.author}</span>
+                      <span>·</span>
+                      <span>{article.readTime}</span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="search" className="mt-0">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 card-shadow">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
               <AlertCircle className="h-5 w-5 text-primary" />
             </div>
-            <h2 className="text-xl font-semibold">Симптомы</h2>
+            <h2 className="text-xl font-semibold">Выберите симптомы</h2>
           </div>
 
           <div className="flex flex-wrap gap-2.5">
@@ -96,9 +138,9 @@ const SymptomsPage = () => {
               Сбросить выбор
             </Button>
           )}
-        </section>
+            </section>
 
-        <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 card-shadow">
+            <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 card-shadow">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary">
               <Stethoscope className="h-5 w-5 text-secondary-foreground" />
@@ -120,8 +162,10 @@ const SymptomsPage = () => {
               {lessCommonResults.length > 0 && <ResultGroup title="Реже встречается" items={lessCommonResults} />}
             </div>
           )}
-        </section>
-      </div>
+            </section>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
