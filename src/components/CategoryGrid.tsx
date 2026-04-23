@@ -5,6 +5,7 @@ import { getRootCategories, getChildCategories, type Article } from "@/data/mock
 
 // Sections that have dedicated pages instead of generic /categories/:slug
 const DEDICATED_ROUTES: Record<string, string> = {
+  "general-info": "/general-info",
   "research": "/scientific",
   "dissertations": "/dissertations",
   "doctors": "/doctors",
