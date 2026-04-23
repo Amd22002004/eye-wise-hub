@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -15,7 +15,6 @@ const ArticlesListPage = lazy(() => import("./pages/ArticlesListPage"));
 const CMSPage = lazy(() => import("./pages/CMSPage"));
 const ScientificPage = lazy(() => import("./pages/ScientificPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
-const GeneralInfoPage = lazy(() => import("./pages/GeneralInfoPage"));
 const DissertationsPage = lazy(() => import("./pages/DissertationsPage"));
 const DoctorsPage = lazy(() => import("./pages/DoctorsPage"));
 const DoctorProfilePage = lazy(() => import("./pages/DoctorProfilePage"));
@@ -54,7 +53,7 @@ const App = () => (
                   <Route path="/articles" element={<ArticlesListPage />} />
                   <Route path="/scientific" element={<ScientificPage />} />
                   <Route path="/about" element={<AboutPage />} />
-                  <Route path="/general-info" element={<GeneralInfoPage />} />
+                  <Route path="/general-info" element={<Navigate to="/categories/general-info" replace />} />
                   <Route path="/dissertations" element={<DissertationsPage />} />
                   <Route path="/doctors" element={<DoctorsPage />} />
                   <Route path="/doctors/:slug" element={<DoctorProfilePage />} />
