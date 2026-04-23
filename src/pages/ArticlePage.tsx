@@ -163,14 +163,14 @@ const ArticlePage = () => {
       className="container max-w-3xl py-8 sm:py-12 md:py-16"
     >
       <SEO
-        title={article.title}
-        description={article.excerpt}
+        title={seoTitle}
+        description={seoDescription}
         type="article"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "MedicalWebPage",
-          name: article.title,
-          description: article.excerpt,
+          name: seoTitle,
+          description: seoDescription,
           author: { "@type": "Person", name: article.author, jobTitle: article.authorRole },
           dateModified: article.date,
           medicalAudience: { "@type": "MedicalAudience", audienceType: "Patient" },
@@ -200,6 +200,24 @@ const ArticlePage = () => {
           Информация носит ознакомительный характер и не заменяет консультацию врача.
         </p>
       </div>
+
+      {availableSeoLinks.length > 1 && (
+        <nav className="mb-8 sm:mb-10 flex flex-wrap gap-2" aria-label="Разделы статьи">
+          {availableSeoLinks.map((intentSlug) => (
+            <Link
+              key={intentSlug}
+              to={getSeoIntentPath(article.slug, intentSlug)}
+              className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
+                activeIntent === intentSlug
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
+              }`}
+            >
+              {intentSlug === "overview" ? article.title : `${MEDICAL_SECTION_LABELS[seoSectionByIntentSlug[intentSlug]]} ${article.title.toLowerCase()}`}
+            </Link>
+          ))}
+        </nav>
+      )}
 
       {/* Dual-layer toggle */}
       {hasDualContent && (
@@ -254,7 +272,7 @@ const ArticlePage = () => {
       {/* Article content */}
       <div className="space-y-8 sm:space-y-10">
         {hasMedical
-          ? medicalKeys.map((key, i) => {
+          ? orderedMedicalKeys.map((key, i) => {
               const section = article.medicalSections![key]!;
               const text = getContent(section);
               return (
