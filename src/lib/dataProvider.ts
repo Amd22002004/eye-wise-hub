@@ -1,6 +1,13 @@
 import { supabase } from "@/integrations/supabase/client";
 import { articles, categories } from "@/data/mockData";
 
+const mapArticle = (item: any) => ({
+  ...item,
+  medicalSections: item.content_json || item.medicalSections || {},
+  sections: item.sections || [],
+  relatedIds: item.relatedIds || [],
+});
+
 export async function getArticles() {
   const { data, error } = await supabase
     .from("articles")
@@ -13,7 +20,7 @@ export async function getArticles() {
   }
 
   console.log("Using Supabase data");
-  return data;
+  return data.map(mapArticle);
 }
 
 export async function getCategories() {

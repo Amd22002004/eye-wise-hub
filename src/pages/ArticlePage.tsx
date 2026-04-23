@@ -71,8 +71,8 @@ function categorizeRelated(related: Article[]): RelationGroup[] {
 
 function getRelevantDirections(article: Article): { id: string; label: string }[] {
   const text = (article.title + " " + article.excerpt + " " +
-    (article.medicalSections ? Object.values(article.medicalSections).map(s => s ? `${s.simple} ${s.professional}` : "").join(" ") : "") +
-    article.sections.map(s => s.content).join(" ")
+    (article.medicalSections ? Object.values(article.medicalSections).map(s => s ? `${s.simple || ""} ${s.professional || ""}` : "").join(" ") : "") +
+    (article.sections || []).map(s => s.content).join(" ")
   ).toLowerCase();
   return MODERN_DIRECTION_LINKS.filter(d => d.keywords.some(k => text.includes(k.toLowerCase())));
 }
@@ -86,9 +86,10 @@ const ArticlePage = () => {
   const relationGroups = useMemo(() => categorizeRelated(related), [related]);
   const modernLinks = useMemo(() => (article ? getRelevantDirections(article) : []), [article]);
 
-  const getContent = (section?: { simple: string; professional: string }) => {
+  const getContent = (section?: Partial<{ simple: string; professional: string }>) => {
     if (!section) return "";
-    return mode === "simple" ? section.simple : section.professional;
+    const content = mode === "simple" ? section.simple : section.professional;
+    return typeof content === "string" ? content : "";
   };
 
   const loadArticles = async () => {
@@ -112,7 +113,7 @@ const ArticlePage = () => {
 
   const medicalKeys = article.medicalSections
     ? (Object.keys(MEDICAL_SECTION_LABELS) as MedicalSectionKey[]).filter(
-        (k) => article.medicalSections?.[k]
+        (k) => Boolean(getContent(article.medicalSections?.[k]))
       )
     : [];
 
@@ -121,7 +122,7 @@ const ArticlePage = () => {
 
   const tocItems = hasMedical
     ? medicalKeys.map((k) => ({ id: `section-${k}`, label: MEDICAL_SECTION_LABELS[k] }))
-    : article.sections.map((s, i) => ({ id: `section-${i}`, label: s.title }));
+    : (article.sections || []).map((s, i) => ({ id: `section-${i}`, label: s.title }));
 
   return (
     <motion.div
@@ -254,7 +255,7 @@ const ArticlePage = () => {
                 </motion.section>
               );
             })
-            : article.sections.length > 0 ? article.sections.map((section, i) => (
+            : (article.sections || []).length > 0 ? (article.sections || []).map((section, i) => (
               <motion.section
                 key={i}
                 id={`section-${i}`}
