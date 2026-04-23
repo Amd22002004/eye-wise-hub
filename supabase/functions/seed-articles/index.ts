@@ -1,4 +1,5 @@
-import { corsHeaders, createClient } from "npm:@supabase/supabase-js@2.104.0";
+import { createClient } from "npm:@supabase/supabase-js@2.104.0";
+import { corsHeaders } from "npm:@supabase/supabase-js@2.104.0/cors";
 
 type SectionKey = "definition" | "causes" | "symptoms" | "diagnosis" | "treatment" | "prevention";
 type ArticleSeed = { slug: string; title: string; categorySlug: string; subcategorySlug: string; sections: SectionKey[] };
