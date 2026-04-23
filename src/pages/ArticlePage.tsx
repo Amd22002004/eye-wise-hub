@@ -79,28 +79,34 @@ function getRelevantDirections(article: Article): { id: string; label: string }[
 
 const ArticlePage = () => {
   const { slug } = useParams();
-  const [articles, setArticles] = useState([]);
-  const article = articles.find((a) => a.slug === slug);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [mode, setMode] = useState<ViewMode>("simple");
+  const article = articles.length > 0 ? articles.find((a) => a.slug === slug) : undefined;
   const related = useMemo(() => (article ? getRelatedArticles(article, articles) : []), [article, articles]);
   const relationGroups = useMemo(() => categorizeRelated(related), [related]);
   const modernLinks = useMemo(() => (article ? getRelevantDirections(article) : []), [article]);
 
+  const getContent = (section?: { simple: string; professional: string }) => {
+    if (!section) return "";
+    return mode === "simple" ? section.simple : section.professional;
+  };
+
   const loadArticles = async () => {
     const data = await getArticles();
-    setArticles(data);
+    setArticles(data as Article[]);
   };
 
   useEffect(() => {
     loadArticles();
   }, []);
 
+  if (!articles || articles.length === 0) {
+    return <div className="container py-10 text-center text-muted-foreground">Загрузка статьи...</div>;
+  }
+
   if (!article) {
     return (
-      <div className="container py-20 text-center">
-        <h1>Статья не найдена</h1>
-        <Link to="/" className="mt-4 inline-block text-secondary hover:underline">← На главную</Link>
-      </div>
+      <div className="container py-10 text-center text-muted-foreground">Статья не найдена</div>
     );
   }
 
@@ -218,7 +224,7 @@ const ArticlePage = () => {
         {hasMedical
           ? medicalKeys.map((key, i) => {
               const section = article.medicalSections![key]!;
-              const text = section[mode];
+              const text = getContent(section);
               return (
                 <motion.section
                   key={key}
@@ -238,7 +244,9 @@ const ArticlePage = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -6 }}
                       transition={{ duration: 0.2 }}
-                      className="prose-medical"
+                      className={`prose-medical transition-all duration-200 ${
+                        mode === "simple" ? "text-base sm:text-lg leading-relaxed" : "text-sm sm:text-base leading-normal"
+                      }`}
                     >
                       <p>{text}</p>
                     </motion.div>
