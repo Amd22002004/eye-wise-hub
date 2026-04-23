@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Edit, Eye, FileText, Stethoscope, FolderTree } from "lucide-react";
+import { Plus, Edit, Eye, FileText, Stethoscope, FolderTree, UserRound, Activity } from "lucide-react";
 import { categories, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type DualContent, getRootCategories, getChildCategories } from "@/data/mockData";
 import { getArticles } from "@/lib/dataProvider";
+import { supabase } from "@/integrations/supabase/client";
 
 type Tab = "articles" | "new" | "categories";
 
 type DualFields = Record<MedicalSectionKey, DualContent>;
+type CMSCategory = { id: string; slug: string; name: string; parent_id: string | null; icon: string | null };
+type CMSSymptom = { id: string; name: string; slug: string };
+type CMSAuthor = { id: string; name: string; role: string | null };
 
 const EMPTY_DUAL: DualFields = {
   definition: { simple: "", professional: "" },
@@ -26,6 +30,12 @@ const CMSPage = () => {
   const [subcategory, setSubcategory] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [medical, setMedical] = useState<DualFields>({ ...EMPTY_DUAL });
+  const [cmsCategories, setCmsCategories] = useState<CMSCategory[]>([]);
+  const [symptoms, setSymptoms] = useState<CMSSymptom[]>([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [authors, setAuthors] = useState<CMSAuthor[]>([]);
+  const [authorId, setAuthorId] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // Category management state
   const [newCatName, setNewCatName] = useState("");
@@ -36,6 +46,9 @@ const CMSPage = () => {
   const roots = getRootCategories();
   const selectedRoot = categories.find((c) => c.slug === mainCategory);
   const subcategories = selectedRoot ? getChildCategories(selectedRoot.id) : [];
+  const dbRootCategories = cmsCategories.filter((category) => category.parent_id === null);
+  const selectedDbRoot = cmsCategories.find((category) => category.slug === mainCategory);
+  const dbSubcategories = selectedDbRoot ? cmsCategories.filter((category) => category.parent_id === selectedDbRoot.id) : [];
 
   const loadArticles = async () => {
     const data = await getArticles();
@@ -44,18 +57,62 @@ const CMSPage = () => {
 
   useEffect(() => {
     loadArticles();
+    const loadCMSData = async () => {
+      const [{ data: categoryRows }, { data: symptomRows }, { data: authorRows }] = await Promise.all([
+        supabase.from("categories").select("id, slug, name, parent_id, icon").order("name"),
+        supabase.from("symptoms").select("id, name, slug").order("name"),
+        supabase.from("authors").select("id, name, role").order("name"),
+      ]);
+
+      setCmsCategories(categoryRows || []);
+      setSymptoms(symptomRows || []);
+      setAuthors(authorRows || []);
+      if (categoryRows?.length) {
+        const firstRoot = categoryRows.find((category) => category.parent_id === null);
+        if (firstRoot) setMainCategory(firstRoot.slug);
+      }
+    };
+    loadCMSData();
   }, []);
 
   const updateMedical = (key: MedicalSectionKey, layer: "simple" | "professional", value: string) => {
     setMedical((prev) => ({ ...prev, [key]: { ...prev[key], [layer]: value } }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const toggleSymptom = (id: string) => {
+    setSelectedSymptoms((prev) => prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true);
+
+    const { error } = await supabase.functions.invoke("save-medical-article", {
+      body: {
+        title,
+        excerpt,
+        categorySlug: mainCategory,
+        subcategorySlug: subcategory || null,
+        status,
+        authorId: authorId || null,
+        symptomIds: selectedSymptoms,
+        medicalSections: medical,
+      },
+    });
+
+    setIsSaving(false);
+    if (error) {
+      alert("Не удалось сохранить статью. Проверьте поля и повторите попытку.");
+      return;
+    }
+
     alert(`Статья «${title}» сохранена как ${status === "draft" ? "черновик" : "опубликованная"}`);
     setTitle("");
     setExcerpt("");
+    setAuthorId("");
+    setSelectedSymptoms([]);
     setMedical({ ...EMPTY_DUAL });
+    await loadArticles();
     setTab("articles");
   };
 
@@ -161,7 +218,7 @@ const CMSPage = () => {
                   onChange={(e) => { setMainCategory(e.target.value); setSubcategory(""); }}
                   className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
                 >
-                  {roots.map((c) => (
+                  {(dbRootCategories.length ? dbRootCategories : roots).map((c) => (
                     <option key={c.id} value={c.slug}>{c.icon} {c.name}</option>
                   ))}
                 </select>
@@ -172,11 +229,28 @@ const CMSPage = () => {
                   value={subcategory}
                   onChange={(e) => setSubcategory(e.target.value)}
                   className="h-12 w-full rounded-xl border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-                  disabled={subcategories.length === 0}
+                  disabled={(dbSubcategories.length ? dbSubcategories : subcategories).length === 0}
                 >
                   <option value="">— Без подкатегории —</option>
-                  {subcategories.map((c) => (
+                  {(dbSubcategories.length ? dbSubcategories : subcategories).map((c) => (
                     <option key={c.id} value={c.slug}>{c.icon} {c.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-foreground">Автор</label>
+              <div className="relative">
+                <UserRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <select
+                  value={authorId}
+                  onChange={(e) => setAuthorId(e.target.value)}
+                  className="h-12 w-full rounded-xl border border-border bg-background pl-11 pr-4 text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                >
+                  <option value="">— Без автора —</option>
+                  {authors.map((author) => (
+                    <option key={author.id} value={author.id}>{author.name}{author.role ? ` · ${author.role}` : ""}</option>
                   ))}
                 </select>
               </div>
@@ -192,6 +266,38 @@ const CMSPage = () => {
                 <option value="draft">Черновик</option>
                 <option value="published">Опубликовать</option>
               </select>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-8 card-shadow space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/10">
+                <Activity className="h-5 w-5 text-secondary" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">Связанные симптомы</h2>
+                <p className="text-xs text-muted-foreground">Связи сохраняются для подбора диагнозов по симптомам</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {symptoms.map((symptom) => {
+                const active = selectedSymptoms.includes(symptom.id);
+                return (
+                  <button
+                    key={symptom.id}
+                    type="button"
+                    onClick={() => toggleSymptom(symptom.id)}
+                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                      active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    {symptom.name}
+                  </button>
+                );
+              })}
+              {symptoms.length === 0 && <p className="text-sm text-muted-foreground">Симптомы пока не загружены.</p>}
             </div>
           </div>
 
@@ -238,9 +344,10 @@ const CMSPage = () => {
 
           <button
             type="submit"
+            disabled={isSaving}
             className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
           >
-            Сохранить статью
+            {isSaving ? "Сохранение…" : "Сохранить статью"}
           </button>
         </motion.form>
       )}
