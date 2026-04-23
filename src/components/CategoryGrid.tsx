@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { getRootCategories, getChildCategories } from "@/data/mockData";
+import { getRootCategories, getChildCategories, type Article } from "@/data/mockData";
 
 // Sections that have dedicated pages instead of generic /categories/:slug
 const DEDICATED_ROUTES: Record<string, string> = {
@@ -13,7 +13,11 @@ const DEDICATED_ROUTES: Record<string, string> = {
   "symptoms": "/symptoms",
 };
 
-const CategoryGrid = () => {
+interface CategoryGridProps {
+  articles?: Article[];
+}
+
+const CategoryGrid = ({ articles = [] }: CategoryGridProps) => {
   const roots = getRootCategories();
 
   return (
@@ -51,7 +55,9 @@ const CategoryGrid = () => {
                         >
                           <span>{child.icon}</span>
                           {child.name}
-                          <span className="text-muted-foreground ml-0.5 sm:ml-1">{child.articleCount}</span>
+                          <span className="text-muted-foreground ml-0.5 sm:ml-1">
+                            {articles.filter((a) => a.subcategorySlug === child.slug).length}
+                          </span>
                         </Link>
                       ))}
                     </div>
