@@ -16,6 +16,8 @@ const navItems = [
   { to: "/profile", label: "Кабинет" },
 ];
 
+const BRAND_NAME = "Ассоциация офтальмологических клиник";
+
 const Navbar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -26,13 +28,15 @@ const Navbar = () => {
         <Link to="/" className="flex items-center gap-2.5 shrink-0">
           <img
             src="/logo.png"
-            alt="ОфтальмоВики"
+            alt={BRAND_NAME}
             className="h-10 w-10 object-contain"
             onError={(e) => {
               e.currentTarget.src = "/placeholder.svg";
             }}
           />
-          <span className="text-base font-bold text-foreground leading-tight hidden xl:block">ОфтальмоВики</span>
+          <span className="max-w-[190px] text-sm font-bold leading-tight text-foreground sm:max-w-[260px] sm:text-base lg:max-w-[220px] xl:max-w-[300px]">
+            {BRAND_NAME}
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-0 lg:flex">
