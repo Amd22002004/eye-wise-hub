@@ -2,16 +2,18 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
-import { getArticles } from "@/lib/dataProvider";
+import { getArticles, getSymptoms, type SymptomItem } from "@/lib/dataProvider";
 
 const HeroSearch = () => {
   const [query, setQuery] = useState("");
   const [articles, setArticles] = useState([]);
+  const [symptoms, setSymptoms] = useState<SymptomItem[]>([]);
   const navigate = useNavigate();
 
   const loadArticles = async () => {
-    const data = await getArticles();
-    setArticles(data);
+    const [articleData, symptomData] = await Promise.all([getArticles(), getSymptoms()]);
+    setArticles(articleData);
+    setSymptoms(symptomData);
   };
 
   useEffect(() => {
@@ -21,14 +23,14 @@ const HeroSearch = () => {
   const results = useMemo(() => {
     if (query.length < 2) return [];
     const q = query.toLowerCase();
-    return articles
-      .filter((a) => a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q))
+    return symptoms
+      .filter((symptom) => symptom.name.toLowerCase().includes(q) || symptom.description.toLowerCase().includes(q))
       .slice(0, 5);
-  }, [query]);
+  }, [query, symptoms]);
 
   const handleSelect = (slug: string) => {
     setQuery("");
-    navigate(`/article/${slug}`);
+    navigate(`/symptoms/${slug}`);
   };
 
   return (
@@ -62,7 +64,7 @@ const HeroSearch = () => {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Поиск заболеваний, методов лечения…"
+            placeholder="Опишите симптом (например: мушки перед глазами)"
             className="h-12 sm:h-14 w-full rounded-2xl border border-border bg-card pl-12 sm:pl-14 pr-5 text-base shadow-sm transition-shadow duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:card-shadow-hover"
           />
         </div>
@@ -76,14 +78,14 @@ const HeroSearch = () => {
               transition={{ duration: 0.15 }}
               className="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-2xl border border-border bg-card card-shadow"
             >
-              {results.map((article) => (
+              {results.map((symptom) => (
                 <button
-                  key={article.id}
-                  onClick={() => handleSelect(article.slug)}
+                  key={symptom.id}
+                  onClick={() => handleSelect(symptom.slug)}
                   className="flex w-full flex-col gap-0.5 px-4 sm:px-5 py-3 text-left transition-colors duration-150 hover:bg-accent"
                 >
-                  <span className="text-sm font-semibold text-foreground">{article.title}</span>
-                  <span className="text-xs text-muted-foreground line-clamp-1">{article.excerpt}</span>
+                  <span className="text-sm font-semibold text-foreground">{symptom.name}</span>
+                  <span className="text-xs text-muted-foreground line-clamp-1">{symptom.description}</span>
                 </button>
               ))}
             </motion.div>
