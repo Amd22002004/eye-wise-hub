@@ -264,6 +264,16 @@ const ArticlePage = () => {
         </nav>
       )}
 
+      {sameConditionLinks.length > 0 && (
+        <section className="mb-8 sm:mb-10 rounded-2xl border border-border bg-card p-5 sm:p-6 card-shadow">
+          <div className="mb-3 flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-secondary" />
+            <h2 className="mb-0 text-base font-semibold text-foreground">Связанные материалы</h2>
+          </div>
+          <InlineLinkList items={sameConditionLinks} />
+        </section>
+      )}
+
       {/* Dual-layer toggle */}
       {hasDualContent && (
         <div className="mb-8 sm:mb-10 rounded-2xl border border-border bg-card p-1.5 card-shadow inline-flex gap-1">
