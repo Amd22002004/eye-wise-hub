@@ -344,9 +344,10 @@ const CMSPage = () => {
 
           <button
             type="submit"
+            disabled={isSaving}
             className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
           >
-            Сохранить статью
+            {isSaving ? "Сохранение…" : "Сохранить статью"}
           </button>
         </motion.form>
       )}
