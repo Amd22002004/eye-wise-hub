@@ -7,10 +7,11 @@ import ArticleCard from "@/components/ArticleCard";
 import CategoryGrid from "@/components/CategoryGrid";
 import SEO from "@/components/SEO";
 import { getArticles } from "@/lib/dataProvider";
+import type { Article } from "@/data/mockData";
 
 const CategoriesPage = () => {
   const { slug } = useParams();
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState<Article[]>([]);
 
   const loadArticles = async () => {
     const data = await getArticles();
@@ -26,7 +27,7 @@ const CategoriesPage = () => {
       <div className="py-8 sm:py-12 md:py-16">
         <SEO title="Разделы" description="Все разделы энциклопедии офтальмологии — заболевания, диагностика, лечение и профилактика." />
         <h1 className="mb-8 sm:mb-10 text-center">Все разделы</h1>
-        <CategoryGrid />
+        <CategoryGrid articles={articles} />
       </div>
     );
   }
