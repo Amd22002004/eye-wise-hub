@@ -6,6 +6,7 @@ import { MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/
 import ArticleCard from "@/components/ArticleCard";
 import SEO from "@/components/SEO";
 import { getArticles } from "@/lib/dataProvider";
+import { getSeoIntentPath, isSeoIntentSlug, seoIntentBySlug, seoIntentSlugs, seoSectionByIntentSlug, type SeoIntentSlug } from "@/seo/seoTypes";
 
 // Modern directions data for inline links
 const MODERN_DIRECTION_LINKS = [
@@ -45,6 +46,24 @@ function extractKeywords(text: string): string[] {
 }
 
 type ViewMode = "simple" | "professional";
+
+const SEO_INTENT_TITLES: Record<SeoIntentSlug, (title: string) => string> = {
+  overview: (title) => title,
+  symptoms: (title) => `${title} — симптомы, признаки и лечение`,
+  treatment: (title) => `${title} — лечение и современные методы`,
+  causes: (title) => `${title} — причины и факторы риска`,
+  diagnosis: (title) => `${title} — диагностика и обследования`,
+  prevention: (title) => `${title} — профилактика и контроль риска`,
+};
+
+const SEO_INTENT_DESCRIPTIONS: Record<SeoIntentSlug, (title: string) => string> = {
+  overview: (title) => `Подробно о заболевании ${title.toLowerCase()}: что это, как проявляется, как диагностируется и лечится.`,
+  symptoms: (title) => `Подробно о симптомах ${title.toLowerCase()}: как распознать заболевание и когда обращаться к врачу.`,
+  treatment: (title) => `Методы лечения ${title.toLowerCase()}: капли, лазерные процедуры, операции и контроль результата.`,
+  causes: (title) => `Причины ${title.toLowerCase()} и факторы риска: что влияет на развитие заболевания.`,
+  diagnosis: (title) => `Диагностика ${title.toLowerCase()}: какие обследования проводит офтальмолог и зачем они нужны.`,
+  prevention: (title) => `Профилактика ${title.toLowerCase()}: контроль факторов риска, наблюдение и регулярные осмотры.`,
+};
 
 interface RelationGroup {
   type: "disease" | "treatment" | "diagnostics" | "symptoms";
