@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import type { Article } from "@/data/supabaseContent";
+import type { Article } from "@/data/mockData";
 
 interface Props {
   article: Article;

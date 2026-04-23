@@ -1,17 +1,13 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { getCategoryBySlug, getChildCategories } from "@/data/supabaseContent";
+import { categories, articles, getCategoryBySlug, getChildCategories } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
 import CategoryGrid from "@/components/CategoryGrid";
 import SEO from "@/components/SEO";
-import { useContent } from "@/hooks/useContent";
 
 const CategoriesPage = () => {
   const { slug } = useParams();
-  const { data } = useContent();
-  const articles = data?.articles ?? [];
-  const categories = data?.categories ?? [];
 
   if (!slug) {
     return (
@@ -23,7 +19,7 @@ const CategoriesPage = () => {
     );
   }
 
-  const category = getCategoryBySlug(categories, slug);
+  const category = getCategoryBySlug(slug);
   if (!category) {
     return (
       <div className="container py-20 text-center">
@@ -33,7 +29,7 @@ const CategoriesPage = () => {
     );
   }
 
-  const children = getChildCategories(categories, category.id);
+  const children = getChildCategories(category.id);
   const parent = category.parentId ? categories.find((c) => c.id === category.parentId) : null;
 
   const relevantSlugs = [category.slug, ...children.map((c) => c.slug)];
