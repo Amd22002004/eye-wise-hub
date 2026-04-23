@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { articles, categories, type Article } from "@/data/mockData";
+import { articles, categories, type Article, type MedicalSections } from "@/data/mockData";
 import type { Database } from "@/integrations/supabase/types";
 
 type ArticleRow = Database["public"]["Tables"]["articles"]["Row"];
@@ -19,6 +19,14 @@ export interface SymptomPageData {
   relatedSymptoms: SymptomItem[];
 }
 
+const isMedicalSections = (value: unknown): value is MedicalSections =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const getMedicalSections = (item: ArticleRow | Article): MedicalSections => {
+  const content = "content_json" in item ? item.content_json : item.medicalSections;
+  return isMedicalSections(content) ? content : {};
+};
+
 const mapArticle = (item: ArticleRow | Article): Article => ({
   ...item,
   excerpt: item.excerpt || "",
@@ -28,7 +36,7 @@ const mapArticle = (item: ArticleRow | Article): Article => ({
   authorRole: "authorRole" in item ? item.authorRole : "Медицинская редакция",
   date: "date" in item ? item.date : item.updated_at || item.created_at || "",
   readTime: "readTime" in item ? item.readTime : `${item.read_time || 5} мин`,
-  medicalSections: ("content_json" in item ? item.content_json : item.medicalSections) || {},
+  medicalSections: getMedicalSections(item),
   sections: "sections" in item ? item.sections : [],
   relatedIds: "relatedIds" in item ? item.relatedIds : [],
 });
