@@ -11,6 +11,7 @@ export interface ContentSeed {
   subcategorySlug?: string;
   relatedArticleIds: string[];
   relatedSeedIds: string[];
+  generateArticle?: boolean;
 }
 
 export const seedCategories = [
@@ -23,6 +24,11 @@ export const seedCategories = [
 ];
 
 export const contentSeeds: ContentSeed[] = [
+  { id: "seed-eye-pain", kind: "symptom", slug: "eye-pain-symptom", title: "Боль в глазах", intent: "Направить пользователя от жалобы на боль к возможным причинам, срочным признакам и связанным заболеваниям.", category: "Симптомы и жалобы", categorySlug: "symptoms", subcategorySlug: "eye-pain", relatedArticleIds: ["s1", "1"], relatedSeedIds: ["seed-biomicroscopy"], generateArticle: false },
+  { id: "seed-eye-redness", kind: "symptom", slug: "eye-redness-symptom", title: "Покраснение глаз", intent: "Связать жалобу на красный глаз с воспалением, сухостью, травмой и показаниями к осмотру.", category: "Симптомы и жалобы", categorySlug: "symptoms", subcategorySlug: "eye-redness", relatedArticleIds: ["s2", "s1"], relatedSeedIds: ["seed-dry-eye"], generateArticle: false },
+  { id: "seed-blurred-vision", kind: "symptom", slug: "blurred-vision-symptom", title: "Размытое зрение", intent: "Помочь отличить рефракционные причины от катаракты, глаукомы и заболеваний сетчатки.", category: "Симптомы и жалобы", categorySlug: "symptoms", subcategorySlug: "blurred-vision", relatedArticleIds: ["s3", "2", "3"], relatedSeedIds: ["seed-tonometry"], generateArticle: false },
+  { id: "seed-floaters", kind: "symptom", slug: "floaters-symptom", title: "Мушки перед глазами", intent: "Объяснить, когда плавающие помутнения безопасны, а когда нужны срочная диагностика и осмотр сетчатки.", category: "Симптомы и жалобы", categorySlug: "symptoms", subcategorySlug: "floaters", relatedArticleIds: ["s4", "4"], relatedSeedIds: ["seed-anti-vegf"], generateArticle: false },
+  { id: "seed-vision-loss", kind: "symptom", slug: "vision-loss-symptom", title: "Снижение зрения", intent: "Разделить постепенное и внезапное ухудшение зрения и связать жалобу с диагностикой и заболеваниями.", category: "Симптомы и жалобы", categorySlug: "symptoms", subcategorySlug: "vision-loss", relatedArticleIds: ["s5", "1", "2"], relatedSeedIds: ["seed-perimetry"], generateArticle: false },
   { id: "seed-dry-eye", kind: "disease", slug: "dry-eye-syndrome", title: "Синдром сухого глаза", intent: "Помочь пациенту понять причины сухости, жжения и усталости глаз и выбрать правильный маршрут обследования.", category: "Заболевания глаз", categorySlug: "diseases", subcategorySlug: "dry-eye", relatedArticleIds: ["s1", "s2"], relatedSeedIds: ["seed-biomicroscopy"] },
   { id: "seed-diabetic-retinopathy", kind: "disease", slug: "diabetic-retinopathy", title: "Диабетическая ретинопатия", intent: "Объяснить, почему при диабете нужно регулярно проверять сетчатку и какие признаки требуют срочного визита.", category: "Заболевания глаз", categorySlug: "diseases", subcategorySlug: "diabetic-retinopathy", relatedArticleIds: ["4", "s5"], relatedSeedIds: ["seed-anti-vegf"] },
   { id: "seed-tonometry", kind: "diagnostics", slug: "tonometry-eye-pressure", title: "Тонометрия: измерение глазного давления", intent: "Показать, кому и зачем измеряют внутриглазное давление, особенно при риске глаукомы.", category: "Диагностика", categorySlug: "diagnostics", subcategorySlug: "tonometry", relatedArticleIds: ["1", "s5"], relatedSeedIds: ["seed-glaucoma-drops"] },
@@ -32,7 +38,7 @@ export const contentSeeds: ContentSeed[] = [
   { id: "seed-glaucoma-drops", kind: "treatment", slug: "glaucoma-eye-drops", title: "Капли при глаукоме", intent: "Объяснить назначение гипотензивных капель и почему важны регулярность лечения и контроль давления.", category: "Лечение", categorySlug: "treatment", subcategorySlug: "glaucoma-drops", relatedArticleIds: ["1", "s1"], relatedSeedIds: ["seed-tonometry", "seed-perimetry"] },
 ];
 
-export const seedArticles = contentSeeds.map((seed) => ({
+export const seedArticles = contentSeeds.filter((seed) => seed.generateArticle !== false).map((seed) => ({
   id: seed.id,
   slug: seed.slug,
   title: seed.title,
