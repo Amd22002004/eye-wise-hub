@@ -5,7 +5,6 @@ import { getRootCategories, getChildCategories, type Article } from "@/data/mock
 
 // Sections that have dedicated pages instead of generic /categories/:slug
 const DEDICATED_ROUTES: Record<string, string> = {
-  "general-info": "/general-info",
   "research": "/scientific",
   "dissertations": "/dissertations",
   "doctors": "/doctors",
@@ -27,6 +26,9 @@ const CategoryGrid = ({ articles = [] }: CategoryGridProps) => {
         {roots.map((cat, i) => {
           const children = getChildCategories(cat.id);
           const href = DEDICATED_ROUTES[cat.slug] || `/categories/${cat.slug}`;
+          const articleCount = articles.filter(
+            (article) => article.categorySlug === cat.slug || children.some((child) => child.slug === article.subcategorySlug)
+          ).length;
           return (
             <motion.div
               key={cat.id}
@@ -64,7 +66,7 @@ const CategoryGrid = ({ articles = [] }: CategoryGridProps) => {
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                  <span className="text-sm sm:text-base font-medium text-secondary">{cat.articleCount} статей</span>
+                  <span className="text-sm sm:text-base font-medium text-secondary">{articleCount} статей</span>
                   <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
               </Link>
