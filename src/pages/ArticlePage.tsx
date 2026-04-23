@@ -330,6 +330,9 @@ const ArticlePage = () => {
           ? orderedMedicalKeys.map((key, i) => {
               const section = article.medicalSections![key]!;
               const text = getContent(section);
+              const contextualRules = getContextualLinkRules(article.slug, key);
+              const nextStepLinks = getNextStepLinks(article, medicalKeys, key);
+              const symptomDiseaseLinks = key === "symptoms" ? getSymptomDiseaseLinks(text, articles, article.slug) : [];
               return (
                 <motion.section
                   key={key}
@@ -353,9 +356,27 @@ const ArticlePage = () => {
                         mode === "simple" ? "text-base sm:text-lg leading-relaxed" : "text-sm sm:text-base leading-normal"
                       }`}
                     >
-                      <p>{text}</p>
+                      <p>{renderContextualText(text, contextualRules)}</p>
                     </motion.div>
                   </AnimatePresence>
+                  {symptomDiseaseLinks.length > 0 && (
+                    <div className="mt-4 rounded-xl bg-accent/60 px-4 py-3">
+                      <p className="mb-2 text-xs font-semibold text-foreground">Это может быть связано с:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {symptomDiseaseLinks.map((item) => (
+                          <Link key={item.slug} to={getSeoIntentPath(item.slug, "overview")} className="rounded-lg bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors duration-200">
+                            {item.title.toLowerCase()}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {nextStepLinks.length > 0 && (
+                    <div className="mt-4 rounded-xl border border-border bg-card px-4 py-3">
+                      <p className="mb-2 text-xs font-semibold text-foreground">Что делать дальше?</p>
+                      <InlineLinkList items={nextStepLinks} />
+                    </div>
+                  )}
                 </motion.section>
               );
             })
