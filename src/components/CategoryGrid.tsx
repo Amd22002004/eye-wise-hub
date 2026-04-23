@@ -44,7 +44,7 @@ const CategoryGrid = () => {
                       {children.map((child) => (
                         <Link
                           key={child.id}
-                          to={`/article/${child.slug}`}
+                          to={cat.slug === "general-info" ? `/article/${child.slug}` : `/categories/${child.slug}`}
                           onClick={(e) => e.stopPropagation()}
                           className="inline-flex items-center gap-1 rounded-lg bg-accent px-3 sm:px-3.5 py-1.5 sm:py-2 text-sm font-medium text-accent-foreground hover:bg-muted transition-colors duration-200"
                         >
