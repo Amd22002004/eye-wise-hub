@@ -1,13 +1,25 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { categories, articles, getCategoryBySlug, getChildCategories } from "@/data/mockData";
+import { categories, getCategoryBySlug, getChildCategories } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
 import CategoryGrid from "@/components/CategoryGrid";
 import SEO from "@/components/SEO";
+import { getArticles } from "@/lib/dataProvider";
 
 const CategoriesPage = () => {
   const { slug } = useParams();
+  const [articles, setArticles] = useState([]);
+
+  const loadArticles = async () => {
+    const data = await getArticles();
+    setArticles(data);
+  };
+
+  useEffect(() => {
+    loadArticles();
+  }, []);
 
   if (!slug) {
     return (

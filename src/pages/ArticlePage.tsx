@@ -1,10 +1,11 @@
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ArrowLeft, Clock, User, List, Heart, GraduationCap, ShieldCheck, Info, CalendarClock, Sparkles, Stethoscope, Pill, Search, Rocket } from "lucide-react";
-import { articles, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/data/mockData";
+import { MEDICAL_SECTION_LABELS, type MedicalSectionKey, type Article } from "@/data/mockData";
 import ArticleCard from "@/components/ArticleCard";
 import SEO from "@/components/SEO";
+import { getArticles } from "@/lib/dataProvider";
 
 // Modern directions data for inline links
 const MODERN_DIRECTION_LINKS = [
@@ -78,11 +79,21 @@ function getRelevantDirections(article: Article): { id: string; label: string }[
 
 const ArticlePage = () => {
   const { slug } = useParams();
+  const [articles, setArticles] = useState([]);
   const article = articles.find((a) => a.slug === slug);
   const [mode, setMode] = useState<ViewMode>("simple");
-  const related = useMemo(() => (article ? getRelatedArticles(article, articles) : []), [article]);
+  const related = useMemo(() => (article ? getRelatedArticles(article, articles) : []), [article, articles]);
   const relationGroups = useMemo(() => categorizeRelated(related), [related]);
   const modernLinks = useMemo(() => (article ? getRelevantDirections(article) : []), [article]);
+
+  const loadArticles = async () => {
+    const data = await getArticles();
+    setArticles(data);
+  };
+
+  useEffect(() => {
+    loadArticles();
+  }, []);
 
   if (!article) {
     return (

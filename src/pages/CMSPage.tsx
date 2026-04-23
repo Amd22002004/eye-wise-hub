@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Edit, Eye, FileText, Stethoscope, FolderTree } from "lucide-react";
-import { articles, categories, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type DualContent, getRootCategories, getChildCategories } from "@/data/mockData";
+import { categories, MEDICAL_SECTION_LABELS, type MedicalSectionKey, type DualContent, getRootCategories, getChildCategories } from "@/data/mockData";
+import { getArticles } from "@/lib/dataProvider";
 
 type Tab = "articles" | "new" | "categories";
 
@@ -18,6 +19,7 @@ const EMPTY_DUAL: DualFields = {
 
 const CMSPage = () => {
   const [tab, setTab] = useState<Tab>("articles");
+  const [articles, setArticles] = useState([]);
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [mainCategory, setMainCategory] = useState(getRootCategories()[0]?.slug ?? "");
@@ -34,6 +36,15 @@ const CMSPage = () => {
   const roots = getRootCategories();
   const selectedRoot = categories.find((c) => c.slug === mainCategory);
   const subcategories = selectedRoot ? getChildCategories(selectedRoot.id) : [];
+
+  const loadArticles = async () => {
+    const data = await getArticles();
+    setArticles(data);
+  };
+
+  useEffect(() => {
+    loadArticles();
+  }, []);
 
   const updateMedical = (key: MedicalSectionKey, layer: "simple" | "professional", value: string) => {
     setMedical((prev) => ({ ...prev, [key]: { ...prev[key], [layer]: value } }));

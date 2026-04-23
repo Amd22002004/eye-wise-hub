@@ -1,13 +1,24 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, User, GraduationCap, Award, BookOpen, Briefcase, FileText } from "lucide-react";
 import { doctors } from "@/data/doctorsData";
-import { articles } from "@/data/mockData";
 import SEO from "@/components/SEO";
+import { getArticles } from "@/lib/dataProvider";
 
 const DoctorProfilePage = () => {
   const { slug } = useParams();
+  const [articles, setArticles] = useState([]);
   const doctor = doctors.find((d) => d.slug === slug);
+
+  const loadArticles = async () => {
+    const data = await getArticles();
+    setArticles(data);
+  };
+
+  useEffect(() => {
+    loadArticles();
+  }, []);
 
   if (!doctor) {
     return (

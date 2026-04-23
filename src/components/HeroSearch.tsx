@@ -1,12 +1,22 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
-import { articles } from "@/data/mockData";
+import { getArticles } from "@/lib/dataProvider";
 
 const HeroSearch = () => {
   const [query, setQuery] = useState("");
+  const [articles, setArticles] = useState([]);
   const navigate = useNavigate();
+
+  const loadArticles = async () => {
+    const data = await getArticles();
+    setArticles(data);
+  };
+
+  useEffect(() => {
+    loadArticles();
+  }, []);
 
   const results = useMemo(() => {
     if (query.length < 2) return [];
