@@ -438,6 +438,20 @@ const ArticlePage = () => {
         </div>
       )}
 
+      {relatedDiseases.length > 0 && (
+        <section className="mt-10 sm:mt-12">
+          <div className="mb-5 flex items-center gap-2">
+            <Stethoscope className="h-5 w-5 text-secondary" />
+            <h2 className="mb-0">Похожие заболевания</h2>
+          </div>
+          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedDiseases.map((item, index) => (
+              <ArticleCard key={item.id} article={item} index={index} />
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Author card */}
       <div className="mt-10 sm:mt-12 rounded-2xl border border-border bg-accent/50 p-5 sm:p-6">
         <div className="flex items-center gap-3 mb-2">
