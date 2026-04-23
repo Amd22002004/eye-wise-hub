@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
-import { articles } from "@/data/mockData";
 import SEO from "@/components/SEO";
+import { useContent } from "@/hooks/useContent";
 
-const symptomArticles = articles.filter((a) => a.categorySlug === "symptoms");
+const SymptomsPage = () => {
+  const { data } = useContent();
+  const symptomArticles = (data?.articles ?? []).filter((a) => a.categorySlug === "symptoms");
 
-const SymptomsPage = () => (
-  <div className="container max-w-4xl py-8 sm:py-12 md:py-16">
+  return <div className="container max-w-4xl py-8 sm:py-12 md:py-16">
     <SEO
       title="Симптомы и жалобы — офтальмология"
       description="Описание симптомов заболеваний глаз: боль, покраснение, размытое зрение, мушки, снижение зрения. Связь симптомов с заболеваниями."
@@ -49,7 +50,7 @@ const SymptomsPage = () => (
         </motion.div>
       ))}
     </div>
-  </div>
-);
+  </div>;
+};
 
 export default SymptomsPage;

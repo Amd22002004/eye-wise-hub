@@ -2,11 +2,13 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
-import { articles } from "@/data/mockData";
+import { useContent } from "@/hooks/useContent";
 
 const HeroSearch = () => {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const { data } = useContent();
+  const articles = data?.articles ?? [];
 
   const results = useMemo(() => {
     if (query.length < 2) return [];
